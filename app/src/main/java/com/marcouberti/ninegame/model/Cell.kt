@@ -2,38 +2,39 @@ package com.marcouberti.ninegame.model
 
 import kotlin.random.Random
 
-data class Cell(val width: Int, val blocks: MutableList<Boolean>) {
+data class Cell(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()) {
     init {
-        if(blocks.size != width) {
+        if(blocks.size != width*width) {
             blocks.clear()
-            for (i in 1..width) blocks.add(false)
+            for (i in 1..width*width) blocks.add(false)
+            initRandom()
         }
-        initRandom()
     }
 }
 
-operator fun Cell.set(pos: Int, value: Boolean) = {
-    when(value) {
-        true -> check(pos)
-        false -> uncheck(pos)
-    }
+operator fun Cell.set(pos: Int, value: Boolean) {
+    blocks[pos-1] = value
+}
+
+operator fun Cell.get(pos: Int): Boolean {
+    return blocks[pos-1]
 }
 
 fun Cell.check(pos: Int) {
-    this.blocks[pos-1] = true
+    this[pos] = true
 }
 
 fun Cell.uncheck(pos: Int) {
-    this.blocks[pos-1] = false
+    this[pos] = false
 }
 
 fun Cell.clearAll() {
-    for(i in 1 .. width) uncheck(i)
+    for(i in 1 .. width*width) uncheck(i)
 }
 
 fun Cell.initRandom() {
     clearAll()
-    this[Random.nextInt(1, width+1)] = true
+    this[Random.nextInt(1, (width*width)+1)] = true
 }
 
 fun Cell.isFull(): Boolean {
