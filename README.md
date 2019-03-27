@@ -1,2 +1,2 @@
-# nine-game
+# Nine Game
 Nine Game
