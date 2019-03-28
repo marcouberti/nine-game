@@ -53,5 +53,6 @@ fun Cell.merge(that: Cell): Cell? {
 }
 
 fun Cell.mergeable(that: Cell): Boolean {
+    if(this.width != that.width) return false
     return !this.blocks.zip(that.blocks).any { it.first && it.second }
 }
