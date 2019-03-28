@@ -108,6 +108,23 @@ class CellTest {
     }
 
     @Test
+    fun `two non mergeable cells when merged return null`() {
+        val cell1 = Cell(4).apply { clearAll() }
+        val cell2 = Cell(5).apply { clearAll() }
+        val merged = cell1.merge(cell2)
+        assertNull(merged)
+    }
+
+    @Test
+    fun `weight returns the number of flagged blocks`() {
+        val c = Cell(4).apply { clearAll() }
+        c.check(1)
+        c.check(7)
+        c.check(4)
+        assertEquals(3, c.weight())
+    }
+
+    @Test
     fun `two complementary cells when merged result in a full cell`() {
         val cell1 = Cell(3).apply {
             clearAll()
