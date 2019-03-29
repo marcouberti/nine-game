@@ -2,7 +2,7 @@ package com.marcouberti.ninegame.model
 
 import kotlin.random.Random
 
-data class Cell(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()) {
+data class Card(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()) {
     init {
         if(blocks.size != width*width) {
             blocks.clear()
@@ -12,47 +12,47 @@ data class Cell(val width: Int, val blocks: MutableList<Boolean> = mutableListOf
     }
 }
 
-operator fun Cell.set(pos: Int, value: Boolean) {
+operator fun Card.set(pos: Int, value: Boolean) {
     blocks[pos-1] = value
 }
 
-operator fun Cell.get(pos: Int): Boolean {
+operator fun Card.get(pos: Int): Boolean {
     return blocks[pos-1]
 }
 
-fun Cell.check(pos: Int) {
+fun Card.check(pos: Int) {
     this[pos] = true
 }
 
-fun Cell.uncheck(pos: Int) {
+fun Card.uncheck(pos: Int) {
     this[pos] = false
 }
 
-fun Cell.clearAll() {
+fun Card.clearAll() {
     for(i in 1 .. width*width) uncheck(i)
 }
 
-fun Cell.initRandom() {
+fun Card.initRandom() {
     clearAll()
     this[Random.nextInt(1, (width*width)+1)] = true
 }
 
-fun Cell.isFull(): Boolean {
+fun Card.isFull(): Boolean {
     return blocks.all { it }
 }
 
-fun Cell.weight(): Int {
+fun Card.weight(): Int {
     return blocks.count { it }
 }
 
-fun Cell.merge(that: Cell): Cell? {
+fun Card.merge(that: Card): Card? {
     return if(mergeable(that)) {
         val mergedBlocks = this.blocks.mapIndexed { index, b -> b || that.blocks[index] }
-        Cell(width, mergedBlocks.toMutableList())
+        Card(width, mergedBlocks.toMutableList())
     }else null
 }
 
-fun Cell.mergeable(that: Cell?): Boolean {
+fun Card.mergeable(that: Card?): Boolean {
     if(that == null) return false
     if(this == that) return false
     if(this.width != that.width) return false

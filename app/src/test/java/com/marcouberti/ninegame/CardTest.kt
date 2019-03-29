@@ -5,22 +5,22 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
-class CellTest {
+class CardTest {
     @Test
-    fun `a freshly new cell contains "width*width" blocks`() {
-        val c = Cell(4)
+    fun `a freshly new card contains "width*width" blocks`() {
+        val c = Card(4)
         assertEquals(16, c.blocks.size)
     }
 
     @Test
-    fun `a freshly new cell contains only one filled block`() {
-        val c = Cell(5)
+    fun `a freshly new card contains only one filled block`() {
+        val c = Card(5)
         assertEquals(1, c.blocks.count { it })
     }
 
     @Test
     fun `clear all uncheck all blocks`() {
-        val c = Cell(5)
+        val c = Card(5)
         c[4] = true
         c[5] = true
         c.clearAll()
@@ -29,7 +29,7 @@ class CellTest {
 
     @Test
     fun `set operator overloading is working`() {
-        val c = Cell(5)
+        val c = Card(5)
         c.clearAll()
         c[4] = true
         c[5] = true
@@ -40,7 +40,7 @@ class CellTest {
 
     @Test
     fun `isFull return true if all blocks are checked`() {
-        val c = Cell(5)
+        val c = Card(5)
         c.clearAll()
         for(i in 1 .. (c.width*c.width)) c[i] = true
         assertTrue(c.isFull())
@@ -48,59 +48,59 @@ class CellTest {
 
     @Test
     fun `initRandom check only one block`() {
-        val c = Cell(50)
+        val c = Card(50)
         c.initRandom()
         assertEquals(1, c.blocks.count { it })
     }
 
     @Test
-    fun `two cells with different width cannot be merged`() {
-        val cell1 = Cell(4).apply { clearAll() }
-        val cell2 = Cell(5).apply { clearAll() }
-        assertFalse(cell1.mergeable(cell2))
+    fun `two cards with different width cannot be merged`() {
+        val card1 = Card(4).apply { clearAll() }
+        val card2 = Card(5).apply { clearAll() }
+        assertFalse(card1.mergeable(card2))
     }
 
     @Test
-    fun `two cells with at least one shared flagged block cannot be merged`() {
-        val cell1 = Cell(4).apply {
+    fun `two cards with at least one shared flagged block cannot be merged`() {
+        val card1 = Card(4).apply {
             clearAll()
             check(5)
         }
-        val cell2 = Cell(4).apply {
+        val card2 = Card(4).apply {
             clearAll()
             check(5)
         }
-        assertFalse(cell1.mergeable(cell2))
+        assertFalse(card1.mergeable(card2))
     }
 
     @Test
-    fun `two cells with no shared flagged block can be merged`() {
-        val cell1 = Cell(4).apply {
+    fun `two cards with no shared flagged block can be merged`() {
+        val card1 = Card(4).apply {
             clearAll()
             check(1)
             check(3)
         }
-        val cell2 = Cell(4).apply {
+        val card2 = Card(4).apply {
             clearAll()
             check(5)
             check(2)
         }
-        assertTrue(cell1.mergeable(cell2))
+        assertTrue(card1.mergeable(card2))
     }
 
     @Test
-    fun `two cells can be merged`() {
-        val cell1 = Cell(4).apply {
+    fun `two cards can be merged`() {
+        val card1 = Card(4).apply {
             clearAll()
             check(1)
             check(3)
         }
-        val cell2 = Cell(4).apply {
+        val card2 = Card(4).apply {
             clearAll()
             check(5)
             check(2)
         }
-        val merged = cell1.merge(cell2)
+        val merged = card1.merge(card2)
         assertTrue(merged!![1])
         assertTrue(merged[3])
         assertTrue(merged[5])
@@ -108,16 +108,16 @@ class CellTest {
     }
 
     @Test
-    fun `two non mergeable cells when merged return null`() {
-        val cell1 = Cell(4).apply { clearAll() }
-        val cell2 = Cell(5).apply { clearAll() }
-        val merged = cell1.merge(cell2)
+    fun `two non mergeable cards when merged return null`() {
+        val card1 = Card(4).apply { clearAll() }
+        val card2 = Card(5).apply { clearAll() }
+        val merged = card1.merge(card2)
         assertNull(merged)
     }
 
     @Test
     fun `weight returns the number of flagged blocks`() {
-        val c = Cell(4).apply { clearAll() }
+        val c = Card(4).apply { clearAll() }
         c.check(1)
         c.check(7)
         c.check(4)
@@ -125,15 +125,15 @@ class CellTest {
     }
 
     @Test
-    fun `two complementary cells when merged result in a full cell`() {
-        val cell1 = Cell(3).apply {
+    fun `two complementary cards when merged result in a full card`() {
+        val card1 = Card(3).apply {
             clearAll()
             check(1)
             check(2)
             check(3)
             check(4)
         }
-        val cell2 = Cell(3).apply {
+        val card2 = Card(3).apply {
             clearAll()
             check(5)
             check(6)
@@ -141,19 +141,19 @@ class CellTest {
             check(8)
             check(9)
         }
-        val merged = cell1.merge(cell2)
+        val merged = card1.merge(card2)
         assertTrue(merged?.isFull() == true)
     }
 
     @Test
-    fun `two not complementary cells when merged result in a NOT full cell`() {
-        val cell1 = Cell(3).apply {
+    fun `two not complementary cards when merged result in a NOT full card`() {
+        val card1 = Card(3).apply {
             clearAll()
             check(1)
             check(3)
             check(4)
         }
-        val cell2 = Cell(3).apply {
+        val card2 = Card(3).apply {
             clearAll()
             check(5)
             check(6)
@@ -161,7 +161,7 @@ class CellTest {
             check(8)
             check(9)
         }
-        val merged = cell1.merge(cell2)
+        val merged = card1.merge(card2)
         assertFalse(merged?.isFull() == true)
     }
 }

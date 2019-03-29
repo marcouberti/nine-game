@@ -1,13 +1,13 @@
 package com.marcouberti.ninegame.model
 
-class Board(val width: Int, val cells: MutableMap<Pair<Int, Int>, Cell?> = mutableMapOf())
+class Board(val width: Int, val cards: MutableMap<Pair<Int, Int>, Card?> = mutableMapOf())
 
-operator fun Board.set(pair: Pair<Int,Int>, cell: Cell?) {
-    cells[pair] = cell
+operator fun Board.set(pair: Pair<Int,Int>, card: Card?) {
+    cards[pair] = card
 }
 
-operator fun Board.get(pair: Pair<Int, Int>): Cell? {
-    return cells[pair]
+operator fun Board.get(pair: Pair<Int, Int>): Card? {
+    return cards[pair]
 }
 
 fun Board.isFull(): Boolean {
@@ -24,10 +24,10 @@ fun Board.mergeable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     if(pos1 == pos2) return false
     if(this[pos1] == null || this[pos2] == null) return false
     if(pos1.first == pos2.first) {//same row
-        val middleCell = cells.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
+        val middleCell = cards.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
         if(middleCell) return false
     }else if(pos1.second == pos2.second) {// same column
-        val middleCell = cells.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
+        val middleCell = cards.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
         if(middleCell) return false
     }else return false // no same row or column
     return this[pos1]?.mergeable(this[pos2]) == true
