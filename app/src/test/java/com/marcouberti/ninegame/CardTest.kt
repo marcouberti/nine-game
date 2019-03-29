@@ -1,5 +1,6 @@
 package com.marcouberti.ninegame
 
+import com.marcouberti.ninegame.initializers.DefaultCardInitializer
 import com.marcouberti.ninegame.model.*
 import org.junit.Test
 
@@ -13,9 +14,9 @@ class CardTest {
     }
 
     @Test
-    fun `a freshly new card contains only one filled block`() {
+    fun `a freshly new card contains zero filled block`() {
         val c = Card(5)
-        assertEquals(1, c.blocks.count { it })
+        assertEquals(0, c.blocks.count { it })
     }
 
     @Test
@@ -47,9 +48,9 @@ class CardTest {
     }
 
     @Test
-    fun `initRandom check only one block`() {
+    fun `DefaultCardInitializer check only one block`() {
         val c = Card(50)
-        c.initRandom()
+        c.init(DefaultCardInitializer)
         assertEquals(1, c.blocks.count { it })
     }
 

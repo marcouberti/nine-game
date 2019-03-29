@@ -33,6 +33,18 @@ fun Board.mergeable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     return this[pos1]?.mergeable(this[pos2]) == true
 }
 
+fun Board.merge(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Int? {
+    return if(mergeable(pos1, pos2)) {
+        val cell1 = this[pos1]!!
+        val cell2 = this[pos2]!!
+        val weights = cell1.weight() + cell2.weight()
+        val merged = cell1.merge(cell2)
+        this[pos2] = merged
+        this[pos1] = null
+        weights
+    }else null
+}
+
 fun Pair<Int, Int>.between(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     if(this.first == pos1.first && this.first == pos2.first) {//same row
         val column1 = if(pos1.second < pos2.second) pos1.second else pos2.second
