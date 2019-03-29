@@ -1,9 +1,11 @@
 package com.marcouberti.ninegame.model
 
+import android.os.Parcelable
 import com.marcouberti.ninegame.initializers.DefaultCardInitializer
-import kotlin.random.Random
+import kotlinx.android.parcel.Parcelize
 
-data class Card(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()) {
+@Parcelize
+data class Card(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()): Parcelable {
     init {
         if(blocks.size != width*width) {
             blocks.clear()
