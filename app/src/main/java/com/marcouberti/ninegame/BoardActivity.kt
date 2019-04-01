@@ -2,6 +2,7 @@ package com.marcouberti.ninegame
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.marcouberti.ninegame.ui.board.BoardFragment
 
 class BoardActivity : AppCompatActivity() {

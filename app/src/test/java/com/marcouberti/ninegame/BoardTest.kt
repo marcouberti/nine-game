@@ -117,7 +117,7 @@ class BoardTest {
             clearAll()
             check(2, 4)
         }
-        assertEquals(3, b.merge(Pair(1,1), Pair(4,1)))
+        assertEquals(1, b.merge(Pair(1,1), Pair(4,1)))
         assertNull(b[Pair(1,1)])
         assertNotNull(b[Pair(4,1)])
         assertEquals(Card(3).apply {
@@ -137,7 +137,7 @@ class BoardTest {
             clearAll()
             check(5,6,7,8,9)
         }
-        assertEquals(9, b.merge(Pair(1,1), Pair(4,1)))
+        assertEquals(20, b.merge(Pair(1,1), Pair(4,1)))
         assertNull(b[Pair(1,1)])
         assertNull(b[Pair(4,1)])
     }

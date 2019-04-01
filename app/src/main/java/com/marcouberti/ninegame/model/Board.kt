@@ -33,7 +33,7 @@ fun Board.init(initializer: (card: Board) -> Unit = DefaultBoardInitializer) {
     initializer(this)
 }
 
-fun Board.addCard() {
+fun Board.addCard(card: Card) {
     val frees = mutableListOf<Pair<Int, Int>>()
     for(i in 1..width) {
         for(j in 1..width) {
@@ -45,7 +45,7 @@ fun Board.addCard() {
         }
     }
     frees.shuffle()
-    this[frees[0]] = Card(3).apply { init() }
+    this[frees[0]] = card
 }
 
 fun Board.mergeable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
@@ -65,11 +65,11 @@ fun Board.merge(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Int? {
     return if(mergeable(pos1, pos2)) {
         val cell1 = this[pos1]!!
         val cell2 = this[pos2]!!
-        val weights = cell1.weight() + cell2.weight()
-        if(weights == cell1.width*cell1.width) {// pouf!
+        val weights = cell1.weight() * cell2.weight()
+        val merged = cell1.merge(cell2)
+        if(merged?.isFull() == true) {// pouf!
             this[pos2] = null
         }else {
-            val merged = cell1.merge(cell2)
             this[pos2] = merged
         }
         this[pos1] = null

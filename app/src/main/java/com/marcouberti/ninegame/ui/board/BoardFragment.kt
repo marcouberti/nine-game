@@ -12,6 +12,9 @@ import androidx.core.view.children
 import androidx.lifecycle.Observer
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.Board
+import com.marcouberti.ninegame.model.Card
+import com.marcouberti.ninegame.model.check
+import com.marcouberti.ninegame.model.set
 import kotlinx.android.synthetic.main.board_fragment.*
 
 class BoardFragment : Fragment() {
@@ -26,7 +29,8 @@ class BoardFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable("BOARD", viewModel.board.value)
+        outState.putParcelable(BOARD_KEY, viewModel.board.value)
+        outState.putInt(SCORE_KEY, viewModel.score.value?:0)
     }
 
     override fun onCreateView(
@@ -60,9 +64,17 @@ class BoardFragment : Fragment() {
             if(s!=null) score.text = s.toString()
         })
 
+        viewModel.nextCard.observe(this, Observer {card: Card ->
+            nextCard.card = card
+        })
+
         if(savedInstanceState != null) {
-            val restoredBoard = savedInstanceState.getParcelable<Board>("BOARD")
-            if(restoredBoard != null) viewModel.setBoard(restoredBoard)
+            val restoredBoard = savedInstanceState.getParcelable<Board>(BOARD_KEY)?.let {
+                viewModel.setBoard(it)
+            }
+            val restoredScore = savedInstanceState.getInt(SCORE_KEY).let {
+                viewModel.setScore(it)
+            }
         }
 
         init()
