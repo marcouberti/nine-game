@@ -66,7 +66,7 @@ fun Board.merge(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Int? {
         val cell1 = this[pos1]!!
         val cell2 = this[pos2]!!
         val weights = cell1.weight() + cell2.weight()
-        if(weights == width*width) {// pouf!
+        if(weights == cell1.width*cell1.width) {// pouf!
             this[pos2] = null
         }else {
             val merged = cell1.merge(cell2)

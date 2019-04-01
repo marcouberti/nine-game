@@ -59,6 +59,22 @@ class BoardTest {
     }
 
     @Test
+    fun `a card can be moved to another position if there is no card in the middle`() {
+        val b = Board(5)
+        b[Pair(1,1)] = Card(3).apply { clearAll() }
+        b[Pair(1,3)] = Card(3).apply { clearAll() }
+        assertTrue(b.movable(Pair(1,1), Pair(1,2)))
+    }
+
+    @Test
+    fun `a card can NOT be moved to another position if there is a card in the middle`() {
+        val b = Board(5)
+        b[Pair(1,1)] = Card(3).apply { clearAll() }
+        b[Pair(1,3)] = Card(3).apply { clearAll() }
+        assertFalse(b.movable(Pair(1,1), Pair(1,4)))
+    }
+
+    @Test
     fun `a card cannot be merged with itself`() {
         val b = Board(5)
         assertFalse(b.mergeable(Pair(1,1), Pair(1,1)))
@@ -108,6 +124,22 @@ class BoardTest {
             clearAll()
             check(1, 2, 4)
         }, b[Pair(4,1)])
+    }
+
+    @Test
+    fun `when two card are merged and the merged one if full both cards disappear`() {
+        val b = Board(5)
+        b[Pair(1,1)] = Card(3).apply {
+            clearAll()
+            check(1,2,3,4)
+        }
+        b[Pair(4,1)] = Card(3).apply {
+            clearAll()
+            check(5,6,7,8,9)
+        }
+        assertEquals(9, b.merge(Pair(1,1), Pair(4,1)))
+        assertNull(b[Pair(1,1)])
+        assertNull(b[Pair(4,1)])
     }
 
     @Test

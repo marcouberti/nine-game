@@ -22,8 +22,8 @@ class BoardViewModel : ViewModel() {
         MutableLiveData<Board>()
     }
 
-    val score: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
+    val score: MutableLiveData<Int?> by lazy {
+        MutableLiveData<Int?>()
     }
 
     fun newGame() {
@@ -35,9 +35,13 @@ class BoardViewModel : ViewModel() {
     fun setSelection(pos: Pair<Int, Int>) {
         if(firstSelection.value == null) firstSelection.value = pos
         else {
+            if(firstSelection.value == pos) return // same position
             secondSelection.value = pos
             val points = board.value?.merge(firstSelection.value?: Pair(1,1), secondSelection.value?:Pair(1,1))
-            if(points != null) score.value = score.value?:0 + points
+            if(points != null) {
+                val newScore = points + (score.value?:0)
+                score.value = newScore
+            }
             else board.value?.move(firstSelection.value?: Pair(1,1), secondSelection.value?:Pair(1,1))
             if(board.value?.isFull() == false) {
                 val updatedBoard = board.value?.copy()

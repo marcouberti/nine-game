@@ -56,6 +56,10 @@ class BoardFragment : Fragment() {
             }
         })
 
+        viewModel.score.observe(this, Observer {s: Int? ->
+            if(s!=null) score.text = s.toString()
+        })
+
         if(savedInstanceState != null) {
             val restoredBoard = savedInstanceState.getParcelable<Board>("BOARD")
             if(restoredBoard != null) viewModel.setBoard(restoredBoard)
