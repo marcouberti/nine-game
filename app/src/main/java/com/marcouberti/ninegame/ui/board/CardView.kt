@@ -8,7 +8,9 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.marcouberti.ninegame.model.Card
 import android.util.TypedValue
+import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.get
+import com.marcouberti.ninegame.model.isFull
 
 
 class CardView: FrameLayout {
@@ -60,10 +62,15 @@ class CardView: FrameLayout {
 
         if(c != null) {
             val blockWidth = measuredWidth.toFloat() / c.width
+            filledPaint.color = Color.BLACK
             filledPaint.alpha = 255
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
                     filledPaint.alpha -= 20
+                    if(this.card?.isFull() == true) {
+                        filledPaint.color = ctx.resources.getColor(R.color.colorAccent)
+                        filledPaint.alpha = 255
+                    }
                     //val paint = if(!c[c.width*(i-1)+j]) borderPaint else filledPaint
                     if(c[c.width*(i-1)+j]) canvas.drawRect((j-1)*blockWidth, (i-1)*blockWidth, (j)*blockWidth, (i)*blockWidth, filledPaint)
                 }

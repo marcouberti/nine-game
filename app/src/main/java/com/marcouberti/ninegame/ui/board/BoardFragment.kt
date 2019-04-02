@@ -69,10 +69,10 @@ class BoardFragment : Fragment() {
         })
 
         if(savedInstanceState != null) {
-            val restoredBoard = savedInstanceState.getParcelable<Board>(BOARD_KEY)?.let {
+            savedInstanceState.getParcelable<Board>(BOARD_KEY)?.let {
                 viewModel.setBoard(it)
             }
-            val restoredScore = savedInstanceState.getInt(SCORE_KEY).let {
+            savedInstanceState.getInt(SCORE_KEY).let {
                 viewModel.setScore(it)
             }
         }

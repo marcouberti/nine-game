@@ -15,6 +15,20 @@ class BoardActivity : AppCompatActivity() {
                 .replace(R.id.container, BoardFragment.newInstance())
                 .commitNow()
         }
+
+        hideSystemUI()
+    }
+
+    private fun hideSystemUI() {
+        val decorView = window.decorView
+        decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
+        decorView.setOnSystemUiVisibilityChangeListener {
+            hideSystemUI()
+        }
     }
 
 }

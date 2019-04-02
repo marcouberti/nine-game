@@ -43,25 +43,32 @@ class BoardViewModel : ViewModel() {
     }
 
     fun setSelection(pos: Pair<Int, Int>) {
-        if(board.value?.isFull() == true) return
+        //if(board.value?.isFull() == true) return
         if(firstSelection.value == null) {
             if(board.value != null && board.value!![pos] != null) firstSelection.value = pos
         }
         else {
-            if(firstSelection.value == pos) return // same position
-            secondSelection.value = pos
-            val points = board.value?.merge(firstSelection.value?: Pair(1,1), secondSelection.value?:Pair(1,1))
-            if(points != null) {
-                board.value?.addCard(nextCard.value?:Card(3).apply { check(Random.nextInt(1, this.width)) })
-                nextCard.value = Card(3).apply {  init() }
-                val newScore = points + (score.value?:0)
-                score.value = newScore
-            }
+            if(firstSelection.value == pos) {
+                board.value?.let {
+                    it[pos]?.rotate()
+                }
+            } // same position
             else {
-                val moved = (board.value?.move(firstSelection.value?: Pair(1,1), secondSelection.value?:Pair(1,1)))?:false
-                if(moved) {
-                    board.value?.addCard(nextCard.value?:Card(3).apply { check(Random.nextInt(1, this.width)) })
-                    nextCard.value = Card(3).apply {  init() }
+                secondSelection.value = pos
+                val points = board.value?.merge(firstSelection.value ?: Pair(1, 1), secondSelection.value ?: Pair(1, 1))
+                if (points != null) {
+                    board.value?.addCard(nextCard.value ?: Card(3).apply { check(Random.nextInt(1, this.width)) })
+                    nextCard.value = Card(3).apply { init() }
+                    val newScore = points + (score.value ?: 0)
+                    score.value = newScore
+                } else {
+                    val moved =
+                        (board.value?.move(firstSelection.value ?: Pair(1, 1), secondSelection.value ?: Pair(1, 1)))
+                            ?: false
+                    if (moved) {
+                        board.value?.addCard(nextCard.value ?: Card(3).apply { check(Random.nextInt(1, this.width)) })
+                        nextCard.value = Card(3).apply { init() }
+                    }
                 }
             }
 
@@ -70,9 +77,10 @@ class BoardViewModel : ViewModel() {
             firstSelection.value = null
             secondSelection.value = null
 
+            /*
             if(board.value?.isFull() == true) {
                 Log.d("Board", "LOOSER")
-            }
+            }*/
         }
     }
 
