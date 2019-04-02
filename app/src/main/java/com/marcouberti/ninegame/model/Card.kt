@@ -2,10 +2,13 @@ package com.marcouberti.ninegame.model
 
 import android.os.Parcelable
 import com.marcouberti.ninegame.initializers.DefaultCardInitializer
+import com.marcouberti.ninegame.initializers.RandomCardInitializer
 import kotlinx.android.parcel.Parcelize
 
+const val CARD_SIZE = 3
+
 @Parcelize
-data class Card(val width: Int, val blocks: MutableList<Boolean> = mutableListOf()): Parcelable {
+data class Card(val width: Int = CARD_SIZE, val blocks: MutableList<Boolean> = mutableListOf()): Parcelable {
     init {
         if(blocks.size != width*width) {
             blocks.clear()
@@ -23,20 +26,40 @@ operator fun Card.get(pos: Int): Boolean {
 }
 
 fun Card.rotate() {
-    val old = mutableListOf<Boolean>().apply {
-        addAll(blocks)
+
+    var mat = arrayOf<Array<Boolean>>()
+    for (i in 1..width) {
+        var row = arrayOf<Boolean>()
+        for (j in 1..width) {
+            row += (blocks[(i-1)*width + (j-1)])
+        }
+        mat += row
     }
-    for(i in 0 until blocks.size) {
-        when(i) {
-            0 -> blocks[2] = old[0]
-            1 -> blocks[5] = old[1]
-            2 -> blocks[8] = old[2]
-            3 -> blocks[1] = old[3]
-            4 -> blocks[4] = old[4]
-            5 -> blocks[7] = old[5]
-            6 -> blocks[0] = old[6]
-            7 -> blocks[3] = old[7]
-            8 -> blocks[6] = old[8]
+
+    // Consider all squares one by one
+    for (x in 0 until width / 2) {
+        // Consider elements in group of 4 in current square
+        for (y in x until width - x - 1) {
+            // store current cell in temp variable
+            val temp = mat[x][y]
+
+            // move values from right to top
+            mat[x][y] = mat[y][width - 1 - x]
+
+            // move values from bottom to right
+            mat[y][width - 1 - x] = mat[width - 1 - x][width - 1 - y]
+
+            // move values from left to bottom
+            mat[width - 1 - x][width - 1 - y] = mat[width - 1 - y][x]
+
+            // assign temp to left
+            mat[width - 1 - y][x] = temp
+        }
+    }
+
+    for (i in 0 until width) {
+        for (j in 0 until width) {
+            blocks[i*width + j] = mat[i][j]
         }
     }
 }
@@ -53,12 +76,16 @@ fun Card.clearAll() {
     for(i in 1 .. width*width) uncheck(i)
 }
 
-fun Card.init(initializer: (card: Card) -> Unit = DefaultCardInitializer) {
+fun Card.init(initializer: (card: Card) -> Unit = RandomCardInitializer) {
     initializer(this)
 }
 
 fun Card.isFull(): Boolean {
     return blocks.all { it }
+}
+
+fun Card.isEmpty(): Boolean {
+    return blocks.none { it }
 }
 
 fun Card.weight(): Int {

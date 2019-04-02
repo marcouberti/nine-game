@@ -38,7 +38,7 @@ fun Board.addCard(card: Card) {
     for(i in 1..width) {
         for(j in 1..width) {
             if(this[Pair(i,j)] == null) {
-                //this[Pair(i,j)] = Card(3).apply { init() }
+                //this[Pair(i,j)] = Card().apply { init() }
                 //return
                 frees.add(Pair(i,j))
             }
@@ -65,7 +65,7 @@ fun Board.merge(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Int? {
     return if(mergeable(pos1, pos2)) {
         val cell1 = this[pos1]!!
         val cell2 = this[pos2]!!
-        val weights = cell1.weight() * cell2.weight()
+        val weights = cell1.weight() + cell2.weight()
         val merged = cell1.merge(cell2)
         if(merged?.isFull() == true) {// pouf!
             this[pos2] = null
@@ -96,6 +96,33 @@ fun Board.movable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
         val middleCell = cards.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
         if(middleCell) return false
     }else return false // no same row or column
+    return true
+}
+
+fun Board.gameOver(): Boolean {
+    if(!this.isFull()) return false
+    // for each card
+    for(i in 1..width) {
+        for(j in 1..width) {
+            val card    = this[Pair(i,j)]
+            val top     = this[Pair(i-1,j)]
+            val right   = this[Pair(i,j+1)]
+            val bottom  = this[Pair(i+1,j)]
+            val left    = this[Pair(i,j-1)]
+
+            if(card != null) {
+                var existsMove = false
+                repeat(4) {
+                    card.rotate()
+                    existsMove = card.mergeable(top)     ||
+                            card.mergeable(right)   ||
+                            card.mergeable(bottom)  ||
+                            card.mergeable(left)
+                }
+                if(existsMove) return false
+            }
+        }
+    }
     return true
 }
 

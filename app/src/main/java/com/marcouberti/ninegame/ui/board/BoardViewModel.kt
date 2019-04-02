@@ -38,12 +38,12 @@ class BoardViewModel : ViewModel() {
     fun newGame() {
         if(board.value == null) {
             setBoard(Board(4).apply { init() })
-            nextCard.value = Card(3).apply { init() }
+            nextCard.value = Card().apply { init() }
         }
     }
 
     fun setSelection(pos: Pair<Int, Int>) {
-        //if(board.value?.isFull() == true) return
+        if(board.value?.gameOver() == true) return
         if(firstSelection.value == null) {
             if(board.value != null && board.value!![pos] != null) firstSelection.value = pos
         }
@@ -57,8 +57,8 @@ class BoardViewModel : ViewModel() {
                 secondSelection.value = pos
                 val points = board.value?.merge(firstSelection.value ?: Pair(1, 1), secondSelection.value ?: Pair(1, 1))
                 if (points != null) {
-                    board.value?.addCard(nextCard.value ?: Card(3).apply { check(Random.nextInt(1, this.width)) })
-                    nextCard.value = Card(3).apply { init() }
+                    board.value?.addCard(nextCard.value ?: Card().apply { check(Random.nextInt(1, this.width)) })
+                    nextCard.value = Card().apply { init() }
                     val newScore = points + (score.value ?: 0)
                     score.value = newScore
                 } else {
@@ -66,8 +66,8 @@ class BoardViewModel : ViewModel() {
                         (board.value?.move(firstSelection.value ?: Pair(1, 1), secondSelection.value ?: Pair(1, 1)))
                             ?: false
                     if (moved) {
-                        board.value?.addCard(nextCard.value ?: Card(3).apply { check(Random.nextInt(1, this.width)) })
-                        nextCard.value = Card(3).apply { init() }
+                        board.value?.addCard(nextCard.value ?: Card().apply { check(Random.nextInt(1, this.width)) })
+                        nextCard.value = Card().apply { init() }
                     }
                 }
             }
@@ -77,10 +77,10 @@ class BoardViewModel : ViewModel() {
             firstSelection.value = null
             secondSelection.value = null
 
-            /*
-            if(board.value?.isFull() == true) {
-                Log.d("Board", "LOOSER")
-            }*/
+
+            if(board.value?.gameOver() == true) {
+                Log.d("Board", "GAME OVER")
+            }
         }
     }
 

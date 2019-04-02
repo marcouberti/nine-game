@@ -51,6 +51,7 @@ class CardView: FrameLayout {
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = dpToPx(2f)
         borderPaint.isAntiAlias = true
+        borderPaint.alpha = 40
     }
 
     override fun onDraw(canvas: Canvas) {
