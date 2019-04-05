@@ -2,6 +2,7 @@ package com.marcouberti.ninegame.model
 
 import android.os.Parcelable
 import com.marcouberti.ninegame.initializers.DefaultBoardInitializer
+import com.marcouberti.ninegame.utils.OnSwipeListener
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -89,6 +90,10 @@ fun Board.move(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
 fun Board.movable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     if(pos1 == pos2) return false
     if(this[pos1] == null || this[pos2] != null) return false
+    if(pos1.first < 1 || pos1.first > width) return false
+    if(pos2.first < 1 || pos2.first > width) return false
+    if(pos1.second < 1 || pos1.second > width) return false
+    if(pos2.second < 1 || pos2.second > width) return false
     if(pos1.first == pos2.first) {//same row
         val middleCell = cards.keys.any { pos -> this[pos] != null && pos.between(pos1, pos2)}
         if(middleCell) return false
@@ -99,12 +104,80 @@ fun Board.movable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     return true
 }
 
+fun Board.slide(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Int? {
+    if(this[pos] == null) return null
+    // check if the card can be merged
+    val p = firstCardInDirection(pos, direction)
+    if(p != null) {
+        if (this.mergeable(pos, p)) return this.merge(pos,p)
+        else {
+            // otherwise check if we can move it
+            val p = lastPositionInDirection(pos, direction)
+            if(p != null) return if(this.move(pos, p)) 0 else null
+        }
+    }else {
+        // otherwise check if we can move it
+        val p = lastPositionInDirection(pos, direction)
+        if(p != null) return if(this.move(pos, p)) 0 else null
+    }
+    return null
+}
+
+fun Board.firstCardInDirection(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Pair<Int, Int>? {
+    var p = pos
+    while(p == pos || p.first in (1..width) && p.second in (1..width)) {
+        p = when(direction) {
+            OnSwipeListener.Direction.up -> {
+                Pair(p.first - 1, p.second)
+            }
+            OnSwipeListener.Direction.down -> {
+                Pair(p.first + 1, p.second)
+            }
+            OnSwipeListener.Direction.left -> {
+                Pair(p.first, p.second - 1)
+            }
+            OnSwipeListener.Direction.right -> {
+                Pair(p.first, p.second + 1)
+            }
+        }
+        if(this[p] != null) return p
+    }
+    return null
+}
+
+fun Board.lastPositionInDirection(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Pair<Int, Int>? {
+    var p = pos
+    var pre: Pair<Int, Int>? = null
+    while(p == pos || p.first in (1..width) && p.second in (1..width)) {
+        p = when(direction) {
+            OnSwipeListener.Direction.up -> {
+                Pair(p.first - 1, p.second)
+            }
+            OnSwipeListener.Direction.down -> {
+                Pair(p.first + 1, p.second)
+            }
+            OnSwipeListener.Direction.left -> {
+                Pair(p.first, p.second - 1)
+            }
+            OnSwipeListener.Direction.right -> {
+                Pair(p.first, p.second + 1)
+            }
+        }
+        if(this[p] != null) {
+            return pre
+        }
+        if(p.first in (1..width) && p.second in (1..width)) pre = p
+    }
+    return pre
+}
+
 fun Board.gameOver(): Boolean {
     if(!this.isFull()) return false
     // for each card
     for(i in 1..width) {
         for(j in 1..width) {
             val card    = this[Pair(i,j)]
+
             val top     = this[Pair(i-1,j)]
             val right   = this[Pair(i,j+1)]
             val bottom  = this[Pair(i+1,j)]
@@ -114,10 +187,11 @@ fun Board.gameOver(): Boolean {
                 var existsMove = false
                 repeat(4) {
                     card.rotate()
-                    existsMove = card.mergeable(top)     ||
+                    existsMove = existsMove ||
+                            (card.mergeable(top)     ||
                             card.mergeable(right)   ||
                             card.mergeable(bottom)  ||
-                            card.mergeable(left)
+                            card.mergeable(left))
                 }
                 if(existsMove) return false
             }

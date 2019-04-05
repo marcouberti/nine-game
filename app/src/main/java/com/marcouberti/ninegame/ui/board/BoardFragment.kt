@@ -6,18 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.children
 import androidx.lifecycle.Observer
-import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.Board
 import com.marcouberti.ninegame.model.Card
-import com.marcouberti.ninegame.model.check
-import com.marcouberti.ninegame.model.set
 import kotlinx.android.synthetic.main.board_fragment.*
+import com.marcouberti.ninegame.R
+import com.marcouberti.ninegame.utils.OnSwipeListener
 
-class BoardFragment : Fragment() {
+
+class BoardFragment : Fragment(), CardSwipeListener {
 
     var init = false
 
@@ -30,6 +27,7 @@ class BoardFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(BOARD_KEY, viewModel.board.value)
+        outState.putParcelable(NEXT_CARD_KEY, viewModel.nextCard.value)
         outState.putInt(SCORE_KEY, viewModel.score.value?:0)
     }
 
@@ -47,16 +45,7 @@ class BoardFragment : Fragment() {
 
             if(board != null && !init) {
                 init = true
-
-                boardView.children.forEach { l ->
-                    if (l is LinearLayout) {
-                        l.children.forEach { v ->
-                            if (v is ConstraintLayout) {
-                                v.setOnClickListener { v -> viewModel.setSelection((v.findViewById<CardView>(R.id.card)).position) }
-                            }
-                        }
-                    }
-                }
+                boardView.swipeListener = this
             }
         })
 
@@ -75,9 +64,20 @@ class BoardFragment : Fragment() {
             savedInstanceState.getInt(SCORE_KEY).let {
                 viewModel.setScore(it)
             }
+            savedInstanceState.getParcelable<Card>(NEXT_CARD_KEY).let {
+                viewModel.setNextCard(it)
+            }
         }
 
         init()
+    }
+
+    override fun onTap(position: Pair<Int, Int>?) {
+        if(position != null) viewModel.setSelection(position)
+    }
+
+    override fun onSwipe(position: Pair<Int, Int>?, direction: OnSwipeListener.Direction) {
+        if(position != null) viewModel.slide(position, direction)
     }
 
     private fun init() {

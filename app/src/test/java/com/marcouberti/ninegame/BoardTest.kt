@@ -165,4 +165,48 @@ class BoardTest {
             check(2, 4)
         }, b[Pair(4,1)])
     }
+
+    @Test
+    fun `when there is at least one possibile move the game is NOT over`() {
+        val b = Board(2)
+        b[Pair(1,1)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(1,2)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(2,1)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(2,2)] = Card(3).apply {
+            clearAll()
+            check(1)
+        }
+        assertFalse(b.gameOver())
+    }
+
+    @Test
+    fun `when there is no possibile move the game is over`() {
+        val b = Board(2)
+        b[Pair(1,1)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(1,2)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(2,1)] = Card(3).apply {
+            clearAll()
+            check(1, 2, 3, 4, 5, 6, 7, 8)
+        }
+        b[Pair(2,2)] = Card(3).apply {
+            clearAll()
+            check(1, 2)
+        }
+        assertTrue(b.gameOver())
+    }
 }

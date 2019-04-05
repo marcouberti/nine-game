@@ -5,9 +5,14 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.FrameLayout
 import com.marcouberti.ninegame.model.Card
 import android.util.TypedValue
+import android.view.GestureDetector
+import android.view.MotionEvent
+import android.view.View
+import androidx.core.view.GestureDetectorCompat
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.get
 import com.marcouberti.ninegame.model.isFull
@@ -16,6 +21,7 @@ import com.marcouberti.ninegame.model.isFull
 class CardView: FrameLayout {
 
     lateinit var ctx: Context
+
     private val filledPaint = Paint()
     private val borderPaint = Paint()
 
