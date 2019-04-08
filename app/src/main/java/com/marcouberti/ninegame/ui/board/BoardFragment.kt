@@ -11,6 +11,7 @@ import com.marcouberti.ninegame.model.Board
 import com.marcouberti.ninegame.model.Card
 import kotlinx.android.synthetic.main.board_fragment.*
 import com.marcouberti.ninegame.R
+import com.marcouberti.ninegame.model.Move
 import com.marcouberti.ninegame.utils.OnSwipeListener
 
 
@@ -42,11 +43,16 @@ class BoardFragment : Fragment(), CardSwipeListener {
         viewModel = ViewModelProviders.of(this).get(BoardViewModel::class.java)
         viewModel.board.observe(this, Observer<Board> { board: Board? ->
             boardView.board = board
+            //boardView.movements(listOf<Move>())
 
             if(board != null && !init) {
                 init = true
                 boardView.swipeListener = this
             }
+        })
+
+        viewModel.movements.observe(this, Observer<MutableList<Move>> { movements: MutableList<Move> ->
+            boardView.movements = movements
         })
 
         viewModel.score.observe(this, Observer {s: Int? ->

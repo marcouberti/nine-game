@@ -24,9 +24,13 @@ class BoardViewModel : ViewModel() {
         MutableLiveData<Int?>()
     }
 
+    val movements: MutableLiveData<MutableList<Move>> by lazy {
+        MutableLiveData<MutableList<Move>>()
+    }
+
     fun newGame() {
         if(board.value == null) {
-            setBoard(Board(5).apply { init() })
+            setBoard(Board(10).apply { init() })
             nextCard.value = Card().apply { init() }
         }
     }
@@ -36,7 +40,7 @@ class BoardViewModel : ViewModel() {
         board.value?.let {
             it[pos]?.let{ card ->
                 card.rotate()
-                // TODO save movements first
+                movements.value = mutableListOf(Move(MoveType.ROTATION, 0, pos, null))
             }
         }
         updateBoard()
@@ -65,19 +69,20 @@ class BoardViewModel : ViewModel() {
     }
 
     fun slide(position: Pair<Int, Int>, direction: OnSwipeListener.Direction) {
-        val points = board.value?.slide(position, direction) //null -> no move, 0 -> move, N -> merge
-        points?.let {
+        val move = board.value?.slide(position, direction) //null -> no move, 0 -> move, N -> merge
+        move?.points?.let {
             when(it) {
                 0 -> addNewCard()
                 else -> {
-                    var points = 0
-                    points = if(it < CARD_SIZE* CARD_SIZE) it else it*10
-                    score.value = (score.value?:0).plus(points)
+                    addNewCard()
+                    val newPoints = if(it < CARD_SIZE* CARD_SIZE) it else it*10
+                    score.value = (score.value?:0).plus(newPoints)
                 }
             }
 
         }
-        // TODO save movements first
+        if(move != null) movements.value = mutableListOf(move)
+
         updateBoard()
     }
 
@@ -85,18 +90,4 @@ class BoardViewModel : ViewModel() {
         board.value?.addCard(nextCard.value ?: Card().apply { check(Random.nextInt(1, this.width)) })
         nextCard.value = Card().apply { init() }
     }
-
-
-    /*
-    fun launchDataLoad() {
-        viewModelScope.launch {
-            sortList()
-            // Modify UI
-        }
-    }
-
-    suspend fun sortList() = withContext(Dispatchers.Default) {
-        // Heavy work
-    }
-    */
 }

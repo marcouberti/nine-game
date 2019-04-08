@@ -104,23 +104,23 @@ fun Board.movable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
     return true
 }
 
-fun Board.slide(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Int? {
-    if(this[pos] == null) return null
+fun Board.slide(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Move {
+    if(this[pos] == null) return Move()
     // check if the card can be merged
     val p = firstCardInDirection(pos, direction)
     if(p != null) {
-        if (this.mergeable(pos, p)) return this.merge(pos,p)
+        if (this.mergeable(pos, p)) return Move(MoveType.MOVE_AND_MERGE, this.merge(pos,p), pos, p)
         else {
             // otherwise check if we can move it
             val p = lastPositionInDirection(pos, direction)
-            if(p != null) return if(this.move(pos, p)) 0 else null
+            if(p != null) return if(this.move(pos, p)) Move(MoveType.MOVE, 0, pos, p) else Move()
         }
     }else {
         // otherwise check if we can move it
         val p = lastPositionInDirection(pos, direction)
-        if(p != null) return if(this.move(pos, p)) 0 else null
+        if(p != null) return if(this.move(pos, p)) Move(MoveType.MOVE, 0, pos, p) else Move()
     }
-    return null
+    return Move()
 }
 
 fun Board.firstCardInDirection(pos: Pair<Int, Int>, direction: OnSwipeListener.Direction): Pair<Int, Int>? {
