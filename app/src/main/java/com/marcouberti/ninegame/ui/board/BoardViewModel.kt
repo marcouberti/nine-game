@@ -30,7 +30,7 @@ class BoardViewModel : ViewModel() {
 
     fun newGame() {
         if(board.value == null) {
-            setBoard(Board(10).apply { init() })
+            setBoard(Board(6).apply { init() })
             nextCard.value = Card().apply { init() }
         }
     }

@@ -3,10 +3,6 @@ package com.marcouberti.ninegame.ui.board
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PointF
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
@@ -20,11 +16,19 @@ import androidx.core.view.GestureDetectorCompat
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.get
 import com.marcouberti.ninegame.model.isFull
+import android.R.attr.inset
+import android.animation.ValueAnimator
+import androidx.core.view.ViewCompat.getClipBounds
+import android.graphics.*
+import kotlin.math.max
+import kotlin.math.min
 
 
 class CardView: FrameLayout {
 
     lateinit var ctx: Context
+
+    private val DURATION = 250L
 
     private val filledPaint = Paint()
     private val borderPaint = Paint()
@@ -64,26 +68,43 @@ class CardView: FrameLayout {
         borderPaint.alpha = 40
     }
 
+    var percentageDelayX = 0.0f
+    var percentageDelayY = 0.0f
+    var sign = 1.0f
+    var left = 0.0f
+    var top = 0.0f
+    var right = 0.0f
+    var bottom = 0.0f
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         val c = card
-
-        // card border
-        // canvas.drawRect(0F,0F, measuredWidth.toFloat(), measuredHeight.toFloat(), borderPaint)
-
+        var delayX = 0.0f
+        var delayY = 0.0f
+        val W = measuredWidth
         if(c != null) {
             val blockWidth = measuredWidth.toFloat() / c.width
-            filledPaint.color = Color.BLACK
-            //filledPaint.alpha = 255
+            var cont = 0
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
-                    //filledPaint.alpha -= 20
-                    if(this.card?.isFull() == true) {
-                        filledPaint.color = ctx.resources.getColor(R.color.colorAccent)
-                        //filledPaint.alpha = 255
+                    if(sign == -1.0f) {
+                        delayX = max(cont * percentageDelayX * measuredWidth * 2f, -sign * translationX)
+                        delayY = max(cont * percentageDelayY * measuredWidth * 2f, -sign * translationY)
+                    }else {
+                        delayX = min(cont * percentageDelayX * measuredWidth * 2f, sign * translationX)
+                        delayY = min(cont * percentageDelayY * measuredWidth * 2f, sign * translationY)
                     }
-                    //val paint = if(!c[c.width*(i-1)+j]) borderPaint else filledPaint
-                    if(c[c.width*(i-1)+j]) canvas.drawRect((j-1)*blockWidth, (i-1)*blockWidth, (j)*blockWidth, (i)*blockWidth, filledPaint)
+
+                    left = (j-1)*blockWidth - delayX
+                    top = (i-1)*blockWidth - delayY
+                    right = (j)*blockWidth - delayX
+                    bottom = (i)*blockWidth - delayY
+
+                    if(c[c.width*(i-1)+j]) {
+                        canvas.drawRect(left, top, right, bottom, filledPaint)
+                        cont++
+                    }
                 }
             }
         }
@@ -105,7 +126,7 @@ class CardView: FrameLayout {
 
         AnimatorSet().apply {
             playTogether(rot, scaleX, scaleY)
-            duration = 125
+            duration = DURATION
             doOnEnd {
                 animationEndBlock()
                 this@CardView.rotation = 0f
@@ -119,7 +140,7 @@ class CardView: FrameLayout {
 
     fun animateNothing(animationEndBlock: () -> Unit) {
         val oa = ObjectAnimator.ofFloat(this, "rotation", 0f, 0f).apply {
-            duration = 125
+            duration = DURATION
         }
         oa.doOnEnd {
             animationEndBlock()
@@ -130,13 +151,38 @@ class CardView: FrameLayout {
     fun animateMovement(from: PointF, to: PointF, animationEndBlock: () -> Unit) {
         val animX = ObjectAnimator.ofFloat(this, "translationX", from.x, to.x)
         val animY = ObjectAnimator.ofFloat(this, "translationY", from.y, to.y)
+
+        val strPropertyToAnimate = when(from.x - to.x) {
+            0.0f -> {
+                sign = if(from.y - to.y < 0) 1.0f else -1.0f
+                "percentageDelayY"
+            }
+            else -> {
+                sign = if(from.x - to.x < 0) 1.0f else -1.0f
+                "percentageDelayX"
+            }
+        }
+
+        val animPercentage = ObjectAnimator.ofFloat(this, strPropertyToAnimate, sign*1.0f, 0.0f)
         AnimatorSet().apply {
             playTogether(animX, animY)
-            duration = 125
+            duration = DURATION
             doOnEnd {
                 animationEndBlock()
                 this@CardView.translationX = 0f
                 this@CardView.translationY = 0f
+            }
+            start()
+        }
+
+        animPercentage.apply {
+            duration = DURATION
+            addUpdateListener {
+                invalidate()
+            }
+            doOnEnd {
+                percentageDelayX = 0.0f
+                percentageDelayY = 0.0f
             }
             start()
         }
