@@ -15,6 +15,7 @@ import androidx.core.view.GestureDetectorCompat
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.*
 import com.marcouberti.ninegame.utils.OnSwipeListener
+import kotlinx.coroutines.*
 
 class BoardView: LinearLayout, View.OnTouchListener {
 
@@ -127,31 +128,47 @@ class BoardView: LinearLayout, View.OnTouchListener {
                     val view = cardMap[Pair(i,j)]
                     if(view != null) {
 
-                        val animationEndBlock = {
-                            view.card = b[Pair(i, j)]
-                            cardMap[Pair(i,j)]?.card = b[Pair(i,j)]
-                        }
+                        val moves = movements?.filter { it.from ==  Pair(i, j)}
 
-                        val move = movements?.firstOrNull { it.from ==  Pair(i, j)}
-
-                        when(move?.type) {
-                            MoveType.ROTATION -> view.animateRotation(animationEndBlock)
-                            MoveType.MOVE, MoveType.MOVE_AND_MERGE -> {
-                                val from = PointF(0f, 0f) // the move is relative to itself
-
-                                val locationOnScreenThis = IntArray(2)
-                                view.getLocationOnScreen(locationOnScreenThis)
-
-                                val locationOnScreenThat = IntArray(2)
-                                cardMap[move.to]?.let{
-                                    it.getLocationOnScreen(locationOnScreenThat)
-
-                                    val to = PointF(locationOnScreenThat[0].toFloat() - locationOnScreenThis[0].toFloat(),
-                                        locationOnScreenThat[1].toFloat() - locationOnScreenThis[1].toFloat())
-                                    view.animateMovement(from, to, animationEndBlock)
+                        moves?.forEach { move ->
+                            when(move.type) {
+                                MoveType.ROTATION -> {
+                                    val animationEndBlock = {
+                                        view.card = b[Pair(i, j)]
+                                    }
+                                    view.animateRotation(animationEndBlock)
                                 }
+                                MoveType.MOVE, MoveType.MOVE_AND_MERGE -> {
+
+                                    val animationEndBlock = {
+                                        view.card = b[Pair(i, j)]
+                                        cardMap[move.to!!]?.card = b[move.to]
+                                    }
+
+                                    val from = PointF(0f, 0f) // the move is relative to itself
+
+                                    val locationOnScreenThis = IntArray(2)
+                                    view.getLocationOnScreen(locationOnScreenThis)
+
+                                    val locationOnScreenThat = IntArray(2)
+                                    cardMap[move.to]?.let{
+                                        it.getLocationOnScreen(locationOnScreenThat)
+
+                                        val to = PointF(locationOnScreenThat[0].toFloat() - locationOnScreenThis[0].toFloat(),
+                                            locationOnScreenThat[1].toFloat() - locationOnScreenThis[1].toFloat())
+                                        if(move.type == MoveType.MOVE_AND_MERGE) view.animateMovement(from, to, animationEndBlock, true)
+                                        else view.animateMovement(from, to, animationEndBlock, false)
+                                    }
+                                }
+                                /*
+                                MoveType.NEW -> {
+                                    val animationStartBlock = {
+                                        view.card = b[Pair(i, j)]
+                                    }
+                                    view.animateNew(animationStartBlock)
+                                }*/
+                                MoveType.NONE -> {}
                             }
-                            else -> view.animateNothing(animationEndBlock)
                         }
                     }
                 }

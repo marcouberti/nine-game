@@ -34,7 +34,7 @@ fun Board.init(initializer: (card: Board) -> Unit = DefaultBoardInitializer) {
     initializer(this)
 }
 
-fun Board.addCard(card: Card) {
+fun Board.addCard(card: Card): Pair<Int,Int> {
     val frees = mutableListOf<Pair<Int, Int>>()
     for(i in 1..width) {
         for(j in 1..width) {
@@ -47,6 +47,7 @@ fun Board.addCard(card: Card) {
     }
     frees.shuffle()
     this[frees[0]] = card
+    return frees[0]
 }
 
 fun Board.mergeable(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
@@ -201,13 +202,13 @@ fun Board.gameOver(): Boolean {
 }
 
 fun Pair<Int, Int>.between(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {
-    if(this.first == pos1.first && this.first == pos2.first) {//same row
+    return if(this.first == pos1.first && this.first == pos2.first) {//same row
         val column1 = if(pos1.second < pos2.second) pos1.second else pos2.second
         val column2 = if(pos1.second < pos2.second) pos2.second else pos1.second
-        return this.second in (column1 + 1)..(column2 - 1)
+        this.second in (column1 + 1) until column2
     }else if(this.second == pos1.second && this.second == pos2.second) {// same column
         val row1 = if(pos1.first < pos2.first) pos1.first else pos2.first
         val row2 = if(pos1.first < pos2.first) pos2.first else pos1.first
-        return this.first in (row1 + 1)..(row2 - 1)
-    }else return false // no same row or column
+        this.first in (row1 + 1) until row2
+    }else false // no same row or column
 }

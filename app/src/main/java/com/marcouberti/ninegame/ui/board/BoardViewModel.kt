@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.marcouberti.ninegame.model.*
 import com.marcouberti.ninegame.utils.OnSwipeListener
+import com.marcouberti.ninegame.utils.VibrationManager
 import kotlin.random.Random
 
 const val BOARD_KEY = "BOARD"
@@ -69,25 +70,35 @@ class BoardViewModel : ViewModel() {
     }
 
     fun slide(position: Pair<Int, Int>, direction: OnSwipeListener.Direction) {
+        val moves = mutableListOf<Move>()
         val move = board.value?.slide(position, direction) //null -> no move, 0 -> move, N -> merge
         move?.points?.let {
             when(it) {
-                0 -> addNewCard()
+                0 -> {
+                    /*addNewCard()?.let { pos ->
+                        moves.add(Move(type = MoveType.NEW, from = pos))
+                    }*/
+                }
                 else -> {
-                    addNewCard()
+                    /*addNewCard()?.let { pos ->
+                        moves.add(Move(type = MoveType.NEW, from = pos))
+                    }*/
                     val newPoints = if(it < CARD_SIZE* CARD_SIZE) it else it*10
                     score.value = (score.value?:0).plus(newPoints)
                 }
             }
 
         }
-        if(move != null) movements.value = mutableListOf(move)
+        if(move != null) moves.add(move)
+        if(move?.points == null) VibrationManager.vibrate()
+        movements.value = moves
 
         updateBoard()
     }
 
-    fun addNewCard() {
-        board.value?.addCard(nextCard.value ?: Card().apply { check(Random.nextInt(1, this.width)) })
+    fun addNewCard(): Pair<Int, Int>? {
+        val newCardPosition = board.value?.addCard(nextCard.value ?: Card().apply { check(Random.nextInt(1, this.width)) })
         nextCard.value = Card().apply { init() }
+        return newCardPosition
     }
 }

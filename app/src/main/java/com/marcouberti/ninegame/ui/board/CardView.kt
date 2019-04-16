@@ -4,24 +4,21 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.FrameLayout
 import com.marcouberti.ninegame.model.Card
 import android.util.TypedValue
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
 import androidx.core.animation.doOnEnd
-import androidx.core.view.GestureDetectorCompat
-import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.get
-import com.marcouberti.ninegame.model.isFull
-import android.R.attr.inset
 import android.animation.ValueAnimator
-import androidx.core.view.ViewCompat.getClipBounds
 import android.graphics.*
-import kotlin.math.max
-import kotlin.math.min
+import android.animation.ArgbEvaluator
+import android.view.animation.BounceInterpolator
+import com.marcouberti.ninegame.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 
 class CardView: FrameLayout {
@@ -68,9 +65,10 @@ class CardView: FrameLayout {
         borderPaint.alpha = 40
     }
 
-    var percentageDelayX = 0.0f
-    var percentageDelayY = 0.0f
-    var sign = 1.0f
+    //var percentageDelayX = 1.0f
+    //var percentageDelayY = 1.0f
+    var percentageZoom = 1.0f
+    var orientation = 1.0f
     var left = 0.0f
     var top = 0.0f
     var right = 0.0f
@@ -80,30 +78,25 @@ class CardView: FrameLayout {
         super.onDraw(canvas)
 
         val c = card
-        var delayX = 0.0f
-        var delayY = 0.0f
+        //var delayX: Float
+        //var delayY: Float
+        var zoom: Float
         val W = measuredWidth
         if(c != null) {
-            val blockWidth = measuredWidth.toFloat() / c.width
-            var cont = 0
+            val blockWidth = W / c.width
+            //var cont = 0
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
-                    if(sign == -1.0f) {
-                        delayX = max(cont * percentageDelayX * measuredWidth * 2f, -sign * translationX)
-                        delayY = max(cont * percentageDelayY * measuredWidth * 2f, -sign * translationY)
-                    }else {
-                        delayX = min(cont * percentageDelayX * measuredWidth * 2f, sign * translationX)
-                        delayY = min(cont * percentageDelayY * measuredWidth * 2f, sign * translationY)
-                    }
+                    zoom = blockWidth/2f - ((blockWidth/2f) * abs(percentageZoom))
 
-                    left = (j-1)*blockWidth - delayX
-                    top = (i-1)*blockWidth - delayY
-                    right = (j)*blockWidth - delayX
-                    bottom = (i)*blockWidth - delayY
+                    left = (j-1)*blockWidth - zoom
+                    top = (i-1)*blockWidth - zoom
+                    right = (j)*blockWidth + zoom
+                    bottom = (i)*blockWidth + zoom
 
                     if(c[c.width*(i-1)+j]) {
                         canvas.drawRect(left, top, right, bottom, filledPaint)
-                        cont++
+                        //cont++
                     }
                 }
             }
@@ -132,57 +125,69 @@ class CardView: FrameLayout {
                 this@CardView.rotation = 0f
                 this@CardView.scaleX = 1f
                 this@CardView.scaleY = 1f
-
             }
             start()
         }
     }
 
-    fun animateNothing(animationEndBlock: () -> Unit) {
-        val oa = ObjectAnimator.ofFloat(this, "rotation", 0f, 0f).apply {
+    fun animateNew(animationStartBlock: () -> Unit) {
+
+        val scaleX = ObjectAnimator.ofFloat(this, "scaleX", 0.0F, 1F)
+        val scaleY = ObjectAnimator.ofFloat(this, "scaleY", 0.0F, 1F)
+
+        val animatorSet= AnimatorSet().apply {
+            playTogether(scaleX, scaleY)
+            interpolator = BounceInterpolator()
             duration = DURATION
+
+            doOnEnd {
+                this@CardView.scaleX = 1f
+                this@CardView.scaleY = 1f
+            }
         }
-        oa.doOnEnd {
-            animationEndBlock()
+
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(DURATION*2)
+            animationStartBlock()
+            animatorSet.start()
         }
-        oa.start()
     }
 
-    fun animateMovement(from: PointF, to: PointF, animationEndBlock: () -> Unit) {
+    fun animateMovement(from: PointF, to: PointF, animationEndBlock: () -> Unit, merge: Boolean = false) {
         val animX = ObjectAnimator.ofFloat(this, "translationX", from.x, to.x)
         val animY = ObjectAnimator.ofFloat(this, "translationY", from.y, to.y)
 
-        val strPropertyToAnimate = when(from.x - to.x) {
-            0.0f -> {
-                sign = if(from.y - to.y < 0) 1.0f else -1.0f
-                "percentageDelayY"
-            }
-            else -> {
-                sign = if(from.x - to.x < 0) 1.0f else -1.0f
-                "percentageDelayX"
+        orientation = when(from.x - to.x) {
+            0.0f -> -1f
+            else -> 1f
+        }
+
+        val colorFrom = resources.getColor(R.color.black)
+        val colorTo = resources.getColor(R.color.colorPrimary)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom).apply {
+            addUpdateListener {
+                filledPaint.color = it.animatedValue as Int
+                invalidate()
             }
         }
 
-        val animPercentage = ObjectAnimator.ofFloat(this, strPropertyToAnimate, sign*1.0f, 0.0f)
+        val animZoom = ObjectAnimator.ofFloat(this, "percentageZoom", 1.0f, 1.5f, 1.0f).apply {
+            addUpdateListener {
+                invalidate()
+            }
+        }
+
         AnimatorSet().apply {
-            playTogether(animX, animY)
+            play(animX).with(animY)
+            play(animZoom).with(animX)
+            if(merge) {
+                play(colorAnimation).after(animX)
+            }
             duration = DURATION
             doOnEnd {
                 animationEndBlock()
                 this@CardView.translationX = 0f
                 this@CardView.translationY = 0f
-            }
-            start()
-        }
-
-        animPercentage.apply {
-            duration = DURATION
-            addUpdateListener {
-                invalidate()
-            }
-            doOnEnd {
-                percentageDelayX = 0.0f
-                percentageDelayY = 0.0f
             }
             start()
         }
