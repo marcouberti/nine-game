@@ -19,6 +19,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.max
 
 
 class CardView: FrameLayout {
@@ -68,6 +69,7 @@ class CardView: FrameLayout {
     //var percentageDelayX = 1.0f
     //var percentageDelayY = 1.0f
     var percentageZoom = 1.0f
+    var percentage = 0.0f
     var orientation = 1.0f
     var left = 0.0f
     var top = 0.0f
@@ -84,19 +86,24 @@ class CardView: FrameLayout {
         val W = measuredWidth
         if(c != null) {
             val blockWidth = W / c.width
-            //var cont = 0
+            var cont = 0
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
                     zoom = blockWidth/2f - ((blockWidth/2f) * abs(percentageZoom))
 
-                    left = (j-1)*blockWidth - zoom
-                    top = (i-1)*blockWidth - zoom
-                    right = (j)*blockWidth + zoom
-                    bottom = (i)*blockWidth + zoom
+                    val contribution = max(cont*10, 1)
+
+                    val delayX = - (translationX/contribution) * (1-percentage)
+                    val delayY = - (translationY/contribution) * (1-percentage)
+
+                    left = (j-1)*blockWidth - zoom + delayX
+                    top = (i-1)*blockWidth - zoom + delayY
+                    right = (j)*blockWidth + zoom + delayX
+                    bottom = (i)*blockWidth + zoom +delayY
 
                     if(c[c.width*(i-1)+j]) {
                         canvas.drawRect(left, top, right, bottom, filledPaint)
-                        //cont++
+                        cont++
                     }
                 }
             }
@@ -114,8 +121,8 @@ class CardView: FrameLayout {
 
     fun animateRotation(animationEndBlock: () -> Unit) {
         val rot = ObjectAnimator.ofFloat(this, "rotation", 0f, -90f)
-        val scaleX = ObjectAnimator.ofFloat(this, "scaleX", 1F, 0.5F, 1F)
-        val scaleY = ObjectAnimator.ofFloat(this, "scaleY", 1F, 0.5F, 1F)
+        val scaleX = ObjectAnimator.ofFloat(this, "scaleX", 1F, 1.5F, 1F)
+        val scaleY = ObjectAnimator.ofFloat(this, "scaleY", 1F, 1.5F, 1F)
 
         AnimatorSet().apply {
             playTogether(rot, scaleX, scaleY)
@@ -171,15 +178,18 @@ class CardView: FrameLayout {
             }
         }
 
-        val animZoom = ObjectAnimator.ofFloat(this, "percentageZoom", 1.0f, 1.5f, 1.0f).apply {
+        val animZoom = ObjectAnimator.ofFloat(this, "percentageZoom", 1.0f, 0f, 1.0f).apply {
             addUpdateListener {
                 invalidate()
             }
         }
 
+        val percAnim = ObjectAnimator.ofFloat(this, "percentage",  0f, 1.0f)
+
         AnimatorSet().apply {
             play(animX).with(animY)
             play(animZoom).with(animX)
+            play(percAnim).with(animX)
             if(merge) {
                 play(colorAnimation).after(animX)
             }
