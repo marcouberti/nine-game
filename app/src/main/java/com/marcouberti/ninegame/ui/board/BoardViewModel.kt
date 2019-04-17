@@ -31,7 +31,11 @@ class BoardViewModel : ViewModel() {
 
     fun newGame() {
         if(board.value == null) {
-            setBoard(Board(3).apply { init() })
+            val newBoard = Board(3).apply {
+                val newCards = init()
+                movements.value = newCards.toMutableList()
+            }
+            setBoard(newBoard)
             nextCard.value = Card().apply { init() }
         }
     }

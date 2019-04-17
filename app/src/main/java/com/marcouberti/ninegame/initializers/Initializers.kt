@@ -16,8 +16,10 @@ val RandomCardInitializer = { card:Card -> Unit
     if(card.isEmpty()) card.init(DefaultCardInitializer)
 }
 
-val DefaultBoardInitializer = { board:Board -> Unit
+val DefaultBoardInitializer: (board: Board) -> List<Move> = { board ->
     board.clearAll()
+    val moves = mutableListOf<Move>()
+
     val pos1 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     var pos2 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     while(pos2 == pos1) {
@@ -25,4 +27,8 @@ val DefaultBoardInitializer = { board:Board -> Unit
     }
     board[pos1] = Card().apply{this.init()}
     board[pos2] = Card().apply{this.init()}
+
+    moves.add(Move(MoveType.NEW, null, pos1))
+    moves.add(Move(MoveType.NEW, null, pos2))
+    moves
 }

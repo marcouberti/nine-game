@@ -42,8 +42,8 @@ class BoardFragment : Fragment(), CardSwipeListener {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(BoardViewModel::class.java)
         viewModel.board.observe(this, Observer<Board> { board: Board? ->
+            boardView.movements = viewModel.movements.value
             boardView.board = board
-            //boardView.movements(listOf<Move>())
 
             if(board != null && !init) {
                 init = true

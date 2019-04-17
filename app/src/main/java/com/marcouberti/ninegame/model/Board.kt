@@ -30,8 +30,8 @@ fun Board.clearAll() {
     cards.clear()
 }
 
-fun Board.init(initializer: (card: Board) -> Unit = DefaultBoardInitializer) {
-    initializer(this)
+fun Board.init(initializer: (board: Board) -> List<Move> = DefaultBoardInitializer): List<Move> {
+    return initializer(this)
 }
 
 fun Board.addCard(card: Card): Pair<Int,Int> {
