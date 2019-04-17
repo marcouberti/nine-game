@@ -27,6 +27,7 @@ class SoundManager: LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun connectListener() {
+        player?.isLooping = true
         player?.start()
     }
 
