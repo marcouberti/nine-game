@@ -20,21 +20,9 @@ val DefaultBoardInitializer = { board:Board -> Unit
     board.clearAll()
     val pos1 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     var pos2 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    val pos3 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    var pos4 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    val pos5 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    var pos6 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    val pos7 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    var pos8 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     while(pos2 == pos1) {
         pos2 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     }
     board[pos1] = Card().apply{this.init()}
     board[pos2] = Card().apply{this.init()}
-    board[pos3] = Card().apply{this.init()}
-    board[pos4] = Card().apply{this.init()}
-    board[pos5] = Card().apply{this.init()}
-    board[pos6] = Card().apply{this.init()}
-    board[pos7] = Card().apply{this.init()}
-    board[pos8] = Card().apply{this.init()}
 }

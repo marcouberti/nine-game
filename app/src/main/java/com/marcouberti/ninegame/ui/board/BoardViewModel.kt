@@ -31,7 +31,7 @@ class BoardViewModel : ViewModel() {
 
     fun newGame() {
         if(board.value == null) {
-            setBoard(Board(6).apply { init() })
+            setBoard(Board(3).apply { init() })
             nextCard.value = Card().apply { init() }
         }
     }
@@ -75,14 +75,14 @@ class BoardViewModel : ViewModel() {
         move?.points?.let {
             when(it) {
                 0 -> {
-                    /*addNewCard()?.let { pos ->
+                    addNewCard()?.let { pos ->
                         moves.add(Move(type = MoveType.NEW, from = pos))
-                    }*/
+                    }
                 }
                 else -> {
-                    /*addNewCard()?.let { pos ->
+                    addNewCard()?.let { pos ->
                         moves.add(Move(type = MoveType.NEW, from = pos))
-                    }*/
+                    }
                     val newPoints = if(it < CARD_SIZE* CARD_SIZE) it else it*10
                     score.value = (score.value?:0).plus(newPoints)
                 }

@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.forEach
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.*
 import com.marcouberti.ninegame.utils.OnSwipeListener
@@ -122,7 +123,15 @@ class BoardView: LinearLayout, View.OnTouchListener {
 
                 addView(row)
             }
-        }else if(b!=null) {
+        }else if(b != null) {
+
+            // deep copy cards map
+            // and remove new cards
+            val bNoNew = b.copy(cards = b.cards.toMutableMap()).apply {
+                val newMovements = movements?.filter { it.type == MoveType.NEW }
+                newMovements?.forEach { move -> this[move.from!!] = null }
+            }
+
             for(i in 1..b.width) {
                 for(j in 1..b.width) {
                     val view = cardMap[Pair(i,j)]
@@ -134,15 +143,15 @@ class BoardView: LinearLayout, View.OnTouchListener {
                             when(move.type) {
                                 MoveType.ROTATION -> {
                                     val animationEndBlock = {
-                                        view.card = b[Pair(i, j)]
+                                        view.card = bNoNew[Pair(i, j)]
                                     }
                                     view.animateRotation(animationEndBlock)
                                 }
                                 MoveType.MOVE, MoveType.MOVE_AND_MERGE -> {
 
                                     val animationEndBlock = {
-                                        view.card = b[Pair(i, j)]
-                                        cardMap[move.to!!]?.card = b[move.to]
+                                        view.card = bNoNew[Pair(i, j)]
+                                        cardMap[move.to!!]?.card = bNoNew[move.to]
                                     }
 
                                     val from = PointF(0f, 0f) // the move is relative to itself
@@ -160,13 +169,12 @@ class BoardView: LinearLayout, View.OnTouchListener {
                                         else view.animateMovement(from, to, animationEndBlock, false)
                                     }
                                 }
-                                /*
                                 MoveType.NEW -> {
                                     val animationStartBlock = {
                                         view.card = b[Pair(i, j)]
                                     }
                                     view.animateNew(animationStartBlock)
-                                }*/
+                                }
                                 MoveType.NONE -> {}
                             }
                         }

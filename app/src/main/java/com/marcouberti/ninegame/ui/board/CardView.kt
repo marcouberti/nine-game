@@ -154,7 +154,7 @@ class CardView: FrameLayout {
         }
 
         GlobalScope.launch(Dispatchers.Main) {
-            delay(DURATION*2)
+            delay(DURATION+DURATION/2)// to be sure to run it AFTER the movements animations
             animationStartBlock()
             animatorSet.start()
         }
@@ -191,8 +191,9 @@ class CardView: FrameLayout {
             play(animZoom).with(animX)
             play(percAnim).with(animX)
             if(merge) {
-                play(colorAnimation).after(animX)
+                play(colorAnimation).with(animX)
             }
+
             duration = DURATION
             doOnEnd {
                 animationEndBlock()
