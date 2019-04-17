@@ -3,6 +3,7 @@
           package="com.marcouberti.ninegame">
 
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
             android:name=".GameApplication"

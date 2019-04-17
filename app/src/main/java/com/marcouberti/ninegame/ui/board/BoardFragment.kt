@@ -13,11 +13,13 @@ import kotlinx.android.synthetic.main.board_fragment.*
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.Move
 import com.marcouberti.ninegame.utils.OnSwipeListener
+import com.marcouberti.ninegame.utils.SoundManager
 
 
 class BoardFragment : Fragment(), CardSwipeListener {
 
     var init = false
+    private lateinit var soundManager: SoundManager
 
     companion object {
         fun newInstance() = BoardFragment()
@@ -40,6 +42,10 @@ class BoardFragment : Fragment(), CardSwipeListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        soundManager = SoundManager()
+        this.lifecycle.addObserver(soundManager)
+
         viewModel = ViewModelProviders.of(this).get(BoardViewModel::class.java)
         viewModel.board.observe(this, Observer<Board> { board: Board? ->
             boardView.movements = viewModel.movements.value
