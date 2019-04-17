@@ -3,6 +3,7 @@ package com.marcouberti.ninegame.ui.board
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.marcouberti.ninegame.model.*
+import com.marcouberti.ninegame.utils.LiveEvent
 import com.marcouberti.ninegame.utils.OnSwipeListener
 import com.marcouberti.ninegame.utils.VibrationManager
 import kotlin.random.Random
@@ -12,6 +13,15 @@ const val SCORE_KEY = "SCORE"
 const val NEXT_CARD_KEY = "NEXT_CARD"
 
 class BoardViewModel : ViewModel() {
+
+    val playSfxRotate = LiveEvent<Boolean>()
+    val playSfxMove = LiveEvent<Boolean>()
+    val playSfxMerge = LiveEvent<Boolean>()
+    val playSfxFullMerge = LiveEvent<Boolean>()
+    val playSfxNoMove = LiveEvent<Boolean>()
+    val playSfxNewGame = LiveEvent<Boolean>()
+    val playSfxNewCard = LiveEvent<Boolean>()
+    val playSfxGameOver = LiveEvent<Boolean>()
 
     val board: MutableLiveData<Board> by lazy {
         MutableLiveData<Board>()
@@ -37,6 +47,7 @@ class BoardViewModel : ViewModel() {
             }
             setBoard(newBoard)
             nextCard.value = Card().apply { init() }
+            playSfxNewGame.value = true
         }
     }
 
@@ -46,6 +57,7 @@ class BoardViewModel : ViewModel() {
             it[pos]?.let{ card ->
                 card.rotate()
                 movements.value = mutableListOf(Move(MoveType.ROTATION, 0, pos, null))
+                playSfxRotate.value = true
             }
         }
         updateBoard()
@@ -81,13 +93,22 @@ class BoardViewModel : ViewModel() {
                 0 -> {
                     addNewCard()?.let { pos ->
                         moves.add(Move(type = MoveType.NEW, from = pos))
+                        playSfxNewCard.value = true
                     }
+                    playSfxMove.value = true
                 }
                 else -> {
                     addNewCard()?.let { pos ->
                         moves.add(Move(type = MoveType.NEW, from = pos))
+                        playSfxNewCard.value = true
                     }
-                    val newPoints = if(it < CARD_SIZE* CARD_SIZE) it else it*10
+                    val newPoints = if(it < CARD_SIZE* CARD_SIZE) {
+                        playSfxMerge.value = true
+                        it
+                    } else {
+                        playSfxFullMerge.value = true
+                        it*10
+                    }
                     score.value = (score.value?:0).plus(newPoints)
                 }
             }
@@ -98,6 +119,8 @@ class BoardViewModel : ViewModel() {
         movements.value = moves
 
         updateBoard()
+
+        if(board.value?.gameOver() == true) playSfxGameOver.value = true
     }
 
     fun addNewCard(): Pair<Int, Int>? {

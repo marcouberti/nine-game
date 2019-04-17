@@ -69,6 +69,38 @@ class BoardFragment : Fragment(), CardSwipeListener {
             nextCard.card = card
         })
 
+        viewModel.playSfxRotate.observe(this, Observer {
+            soundManager.playSfx1()
+        })
+
+        viewModel.playSfxFullMerge.observe(this, Observer {
+            soundManager.playSfx2()
+        })
+
+        viewModel.playSfxMerge.observe(this, Observer {
+            soundManager.playSfx3()
+        })
+
+        viewModel.playSfxMove.observe(this, Observer {
+            soundManager.playSfx3()
+        })
+
+        viewModel.playSfxNewGame.observe(this, Observer {
+            soundManager.playSfx3()
+        })
+
+        viewModel.playSfxGameOver.observe(this, Observer {
+            soundManager.playSfx3()
+        })
+
+        viewModel.playSfxNewCard.observe(this, Observer {
+            soundManager.playSfx1()
+        })
+
+        viewModel.playSfxNoMove.observe(this, Observer {
+            soundManager.playSfx3()
+        })
+
         if(savedInstanceState != null) {
             savedInstanceState.getParcelable<Board>(BOARD_KEY)?.let {
                 viewModel.setBoard(it)
