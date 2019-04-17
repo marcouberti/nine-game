@@ -102,6 +102,8 @@ class BoardView: LinearLayout, View.OnTouchListener {
 
     private fun setupBoard() {
         val b = board
+
+        // first views setup
         if(b != null && !init) {
             init = true
             removeAllViews()
@@ -109,22 +111,23 @@ class BoardView: LinearLayout, View.OnTouchListener {
                 val row = LinearLayout(ctx).apply {
                     orientation = HORIZONTAL
                     clipChildren = false
-                    layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                 }
 
                 for(j in 1..b.width) {
                     val rootView = LayoutInflater.from(ctx).inflate(R.layout.card, row, false)
                     row.addView(rootView)
                     val cardView = rootView.findViewById(R.id.card) as CardView
-                    cardView.card = b[Pair(i,j)]
                     cardView.position = Pair(i,j)
                     cardMap[Pair(i,j)] = cardView
                 }
 
                 addView(row)
             }
-        }else if(b != null) {
+        }
 
+        // animate
+        if(b != null) {
             // deep copy cards map
             // and remove new cards
             val bNoNew = b.copy(cards = b.cards.toMutableMap()).apply {
@@ -132,55 +135,52 @@ class BoardView: LinearLayout, View.OnTouchListener {
                 newMovements?.forEach { move -> this[move.from!!] = null }
             }
 
-            for(i in 1..b.width) {
-                for(j in 1..b.width) {
-                    val view = cardMap[Pair(i,j)]
-                    if(view != null) {
+            movements?.reverse() // first move anims, then add new anim
 
-                        val moves = movements?.filter { it.from ==  Pair(i, j)}
+            movements?.forEach { move ->
 
-                        moves?.forEach { move ->
-                            when(move.type) {
-                                MoveType.ROTATION -> {
-                                    val animationEndBlock = {
-                                        view.card = bNoNew[Pair(i, j)]
-                                    }
-                                    view.animateRotation(animationEndBlock)
-                                }
-                                MoveType.MOVE, MoveType.MOVE_AND_MERGE -> {
+                val pos = move.from?:return@forEach // continue
+                val view = cardMap[pos]?:return@forEach // continue
 
-                                    val animationEndBlock = {
-                                        view.card = bNoNew[Pair(i, j)]
-                                        cardMap[move.to!!]?.card = bNoNew[move.to]
-                                    }
+                when(move.type) {
+                    MoveType.ROTATION -> {
+                        val animationEndBlock = {
+                            view.card = bNoNew[pos]
+                        }
+                        view.animateRotation(animationEndBlock)
+                    }
+                    MoveType.MOVE, MoveType.MOVE_AND_MERGE -> {
 
-                                    val from = PointF(0f, 0f) // the move is relative to itself
+                        val animationEndBlock = {
+                            view.card = bNoNew[pos]
+                            cardMap[move.to!!]?.card = bNoNew[move.to]
+                        }
 
-                                    val locationOnScreenThis = IntArray(2)
-                                    view.getLocationOnScreen(locationOnScreenThis)
+                        val from = PointF(0f, 0f) // the move is relative to itself
 
-                                    val locationOnScreenThat = IntArray(2)
-                                    cardMap[move.to]?.let{
-                                        it.getLocationOnScreen(locationOnScreenThat)
+                        val locationOnScreenThis = IntArray(2)
+                        view.getLocationOnScreen(locationOnScreenThis)
 
-                                        val to = PointF(locationOnScreenThat[0].toFloat() - locationOnScreenThis[0].toFloat(),
-                                            locationOnScreenThat[1].toFloat() - locationOnScreenThis[1].toFloat())
-                                        if(move.type == MoveType.MOVE_AND_MERGE) view.animateMovement(from, to, animationEndBlock, true)
-                                        else view.animateMovement(from, to, animationEndBlock, false)
-                                    }
-                                }
-                                MoveType.NEW -> {
-                                    val animationStartBlock = {
-                                        view.card = b[Pair(i, j)]
-                                    }
-                                    view.animateNew(animationStartBlock)
-                                }
-                                MoveType.NONE -> {}
-                            }
+                        val locationOnScreenThat = IntArray(2)
+                        cardMap[move.to]?.let{
+                            it.getLocationOnScreen(locationOnScreenThat)
+
+                            val to = PointF(locationOnScreenThat[0].toFloat() - locationOnScreenThis[0].toFloat(),
+                                locationOnScreenThat[1].toFloat() - locationOnScreenThis[1].toFloat())
+                            if(move.type == MoveType.MOVE_AND_MERGE) view.animateMovement(from, to, animationEndBlock, true)
+                            else view.animateMovement(from, to, animationEndBlock, false)
                         }
                     }
+                    MoveType.NEW -> {
+                        val animationStartBlock = {
+                            view.card = b[pos]
+                        }
+                        view.animateNew(animationStartBlock)
+                    }
+                    MoveType.NONE -> {}
                 }
             }
+
             movements?.clear()
         }
     }
