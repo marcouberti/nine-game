@@ -20,8 +20,8 @@ val DefaultBoardInitializer: (board: Board) -> List<Move> = { board ->
     board.clearAll()
     val moves = mutableListOf<Move>()
 
-    val pos1 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
-    var pos2 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
+    val pos1 = Pair(Random.nextInt(1, board.width+1),Random.nextInt(1, board.width+1))
+    var pos2 = Pair(Random.nextInt(1, board.width+1),Random.nextInt(1, board.width+1))
     while(pos2 == pos1) {
         pos2 = Pair(Random.nextInt(1, board.width),Random.nextInt(1, board.width))
     }
