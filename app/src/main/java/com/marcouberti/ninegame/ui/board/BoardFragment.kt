@@ -67,6 +67,7 @@ class BoardFragment : Fragment(), CardSwipeListener {
 
         viewModel.nextCard.observe(this, Observer {card: Card ->
             nextCard.card = card
+            nextCard2.card = card
         })
 
         viewModel.playSfxRotate.observe(this, Observer {

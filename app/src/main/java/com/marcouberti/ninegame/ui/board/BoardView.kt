@@ -57,11 +57,11 @@ class BoardView: LinearLayout, View.OnTouchListener {
         ctx = context
         orientation = VERTICAL
 
-        borderPaint.color = Color.BLACK
+        borderPaint.color = resources.getColor(R.color.white_alpha_40)
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = dpToPx(1f)
         borderPaint.isAntiAlias = true
-        borderPaint.alpha = 40
+        //borderPaint.alpha = 40
 
         gestureDetector = GestureDetectorCompat(ctx, object : OnSwipeListener() {
 
@@ -191,11 +191,11 @@ class BoardView: LinearLayout, View.OnTouchListener {
             val W = measuredWidth.toFloat()
             val CW = measuredWidth.toFloat() / (board?.width?:1)
 
-            for(i in 0 .. (board?.width?:1)) {
+            for(i in 1 until  (board?.width?:1)) {
                 canvas.drawLine(i*CW, 0F, i*CW , W, borderPaint)
 
             }
-            for(j in 0 .. (board?.width?:1)) {
+            for(j in 1 until (board?.width?:1)) {
                 canvas.drawLine(0F, j*CW, W , j*CW, borderPaint)
             }
     }

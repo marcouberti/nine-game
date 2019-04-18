@@ -71,10 +71,7 @@ class CardView: FrameLayout {
     var percentageZoom = 1.0f
     var percentage = 0.0f
     var orientation = 1.0f
-    var left = 0.0f
-    var top = 0.0f
-    var right = 0.0f
-    var bottom = 0.0f
+    var rect = RectF()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -86,6 +83,7 @@ class CardView: FrameLayout {
         val W = measuredWidth
         if(c != null) {
             val blockWidth = W / c.width
+            val radius = W/2f
             var cont = 0
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
@@ -96,13 +94,15 @@ class CardView: FrameLayout {
                     val delayX = - (translationX/contribution) * (1-percentage)
                     val delayY = - (translationY/contribution) * (1-percentage)
 
-                    left = (j-1)*blockWidth - zoom + delayX
-                    top = (i-1)*blockWidth - zoom + delayY
-                    right = (j)*blockWidth + zoom + delayX
-                    bottom = (i)*blockWidth + zoom +delayY
+                    rect.apply {
+                        left = (j - 1) * blockWidth - zoom + delayX
+                        top = (i - 1) * blockWidth - zoom + delayY
+                        right = (j) * blockWidth + zoom + delayX
+                        bottom = (i) * blockWidth + zoom + delayY
+                    }
 
                     if(c[c.width*(i-1)+j]) {
-                        canvas.drawRect(left, top, right, bottom, filledPaint)
+                        canvas.drawRoundRect(rect, radius, radius, filledPaint)
                         cont++
                     }
                 }
