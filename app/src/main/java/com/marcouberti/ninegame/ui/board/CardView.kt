@@ -33,6 +33,12 @@ class CardView: FrameLayout {
 
     lateinit var position: Pair<Int, Int>
 
+    var color: Int = Color.BLACK
+        set(color) {
+            field = color
+            filledPaint.color = color
+        }
+
     var card: Card? = null
         set(c) {
             field = c

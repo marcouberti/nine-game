@@ -1,5 +1,6 @@
 package com.marcouberti.ninegame.ui.board
 
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -115,6 +116,11 @@ class BoardFragment : Fragment(), CardSwipeListener {
         }
 
         init()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        nextCard2.color = Color.WHITE
     }
 
     override fun onTap(position: Pair<Int, Int>?) {
