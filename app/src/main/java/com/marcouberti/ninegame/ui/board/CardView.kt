@@ -13,7 +13,9 @@ import android.animation.ValueAnimator
 import android.graphics.*
 import android.animation.ArgbEvaluator
 import android.view.animation.BounceInterpolator
+import com.marcouberti.ninegame.GameApplication
 import com.marcouberti.ninegame.R
+import com.marcouberti.ninegame.utils.BlocksBitmapFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -33,7 +35,7 @@ class CardView: FrameLayout {
 
     lateinit var position: Pair<Int, Int>
 
-    var color: Int = Color.BLACK
+    var color: Int = Color.WHITE
         set(color) {
             field = color
             filledPaint.color = color
@@ -61,11 +63,11 @@ class CardView: FrameLayout {
         setWillNotDraw(false)
         ctx = context
 
-        filledPaint.color = Color.BLACK
+        filledPaint.color = resources.getColor(R.color.block_color)
         filledPaint.style = Paint.Style.FILL
         filledPaint.isAntiAlias = true
 
-        borderPaint.color = Color.BLACK
+        borderPaint.color = resources.getColor(R.color.block_color)
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = dpToPx(2f)
         borderPaint.isAntiAlias = true
@@ -77,7 +79,8 @@ class CardView: FrameLayout {
     var percentageZoom = 1.0f
     var percentage = 0.0f
     var orientation = 1.0f
-    var rect = RectF()
+    var dstRect = RectF()
+    var srcRect = Rect()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -89,10 +92,14 @@ class CardView: FrameLayout {
         val W = measuredWidth
         if(c != null) {
             val blockWidth = W / c.width
-            val radius = W/2f
+            val radius = 0f//W/20f
             var cont = 0
             for(i in 1..c.width) {
                 for(j in 1..c.width) {
+
+                    if(((i-1)*c.width +j) % 2 == 0) filledPaint.color = resources.getColor(R.color.block_color)
+                    else filledPaint.color = resources.getColor(R.color.block_color_alternative)
+
                     zoom = blockWidth/2f - ((blockWidth/2f) * abs(percentageZoom))
 
                     val contribution = max(cont*10, 1)
@@ -100,7 +107,7 @@ class CardView: FrameLayout {
                     val delayX = - (translationX/contribution) * (1-percentage)
                     val delayY = - (translationY/contribution) * (1-percentage)
 
-                    rect.apply {
+                    dstRect.apply {
                         left = (j - 1) * blockWidth - zoom + delayX
                         top = (i - 1) * blockWidth - zoom + delayY
                         right = (j) * blockWidth + zoom + delayX
@@ -108,7 +115,17 @@ class CardView: FrameLayout {
                     }
 
                     if(c[c.width*(i-1)+j]) {
-                        canvas.drawRoundRect(rect, radius, radius, filledPaint)
+                        canvas.drawRoundRect(dstRect, radius, radius, filledPaint)
+                        /*
+                        val bitmap = BlocksBitmapFactory.blockAt(GameApplication.context!!, (c.width*(i-1)) + (j))
+                        srcRect.apply {
+                            left = 0
+                            top = 0
+                            right = bitmap.width
+                            bottom = bitmap.height
+                        }
+                        canvas.drawBitmap(bitmap, srcRect, dstRect, filledPaint)
+                        */
                         cont++
                     }
                 }
@@ -175,8 +192,8 @@ class CardView: FrameLayout {
             else -> 1f
         }
 
-        val colorFrom = resources.getColor(R.color.black)
-        val colorTo = resources.getColor(R.color.colorPrimary)
+        val colorFrom = resources.getColor(R.color.block_color)
+        val colorTo = resources.getColor(R.color.colorAccent)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom).apply {
             addUpdateListener {
                 filledPaint.color = it.animatedValue as Int

@@ -1,20 +1,22 @@
 package com.marcouberti.ninegame.ui.board
 
-import android.graphics.Color
+import android.os.Build
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Observer
+import androidx.transition.TransitionManager
 import com.marcouberti.ninegame.model.Board
 import com.marcouberti.ninegame.model.Card
-import kotlinx.android.synthetic.main.board_fragment.*
 import com.marcouberti.ninegame.R
 import com.marcouberti.ninegame.model.Move
 import com.marcouberti.ninegame.utils.OnSwipeListener
 import com.marcouberti.ninegame.utils.SoundManager
+import kotlinx.android.synthetic.main.board_fragment_home.*
 
 
 class BoardFragment : Fragment(), CardSwipeListener {
@@ -33,12 +35,13 @@ class BoardFragment : Fragment(), CardSwipeListener {
         outState.putParcelable(BOARD_KEY, viewModel.board.value)
         outState.putParcelable(NEXT_CARD_KEY, viewModel.nextCard.value)
         outState.putInt(SCORE_KEY, viewModel.score.value?:0)
+        outState.putInt(RECORD_KEY, viewModel.record.value?:0)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.board_fragment, container, false)
+        return inflater.inflate(R.layout.board_fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -66,9 +69,13 @@ class BoardFragment : Fragment(), CardSwipeListener {
             if(s!=null) score.text = s.toString()
         })
 
+        viewModel.record.observe(this, Observer {s: Int? ->
+            if(s!=null) record.text = s.toString()
+        })
+
         viewModel.nextCard.observe(this, Observer {card: Card ->
             nextCard.card = card
-            nextCard2.card = card
+            //nextCard2.card = card
         })
 
         viewModel.playSfxRotate.observe(this, Observer {
@@ -113,6 +120,9 @@ class BoardFragment : Fragment(), CardSwipeListener {
             savedInstanceState.getParcelable<Card>(NEXT_CARD_KEY).let {
                 viewModel.setNextCard(it)
             }
+            savedInstanceState.getInt(RECORD_KEY).let {
+                viewModel.setRecord(it)
+            }
         }
 
         init()
@@ -120,7 +130,33 @@ class BoardFragment : Fragment(), CardSwipeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        nextCard2.color = Color.WHITE
+        //nextCard2.color = Color.WHITE
+
+        playBtn.setOnClickListener { view ->
+            var set = false
+            val constraint1 = ConstraintSet()
+            constraint1.clone(root)
+            val constraint2 = ConstraintSet()
+            constraint2.clone(context, R.layout.board_fragment)
+
+            TransitionManager.beginDelayedTransition(root)
+            val constraint = if(set) constraint1 else constraint2
+            constraint.applyTo(root)
+            set = !set
+        }
+
+        backBtn.setOnClickListener { view ->
+            var set = false
+            val constraint1 = ConstraintSet()
+            constraint1.clone(root)
+            val constraint2 = ConstraintSet()
+            constraint2.clone(context, R.layout.board_fragment_home)
+
+            TransitionManager.beginDelayedTransition(root)
+            val constraint = if(set) constraint1 else constraint2
+            constraint.applyTo(root)
+            set = !set
+        }
     }
 
     override fun onTap(position: Pair<Int, Int>?) {

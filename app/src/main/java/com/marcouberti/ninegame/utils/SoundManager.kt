@@ -13,7 +13,10 @@ import android.media.AudioManager
 
 class SoundManager: LifecycleObserver {
 
-    var player: MediaPlayer? = MediaPlayer.create(GameApplication.context, R.raw.soundtrack)
+    val player: MediaPlayer? by lazy {
+        MediaPlayer.create(GameApplication.context, R.raw.soundtrack)
+    }
+
     var soundPool: SoundPool? = SoundPool(5, AudioManager.STREAM_MUSIC, 0)
     val sfx1: Int
     val sfx2: Int
@@ -27,20 +30,20 @@ class SoundManager: LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun connectListener() {
-        player?.isLooping = true
-        player?.start()
+        //player?.isLooping = true
+        //player?.start()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun disconnectListener() {
-        player?.pause()
+        //player?.pause()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroyListener() {
-        player?.stop()
-        player?.release()
-        player = null
+        //player?.stop()
+        //player?.release()
+        //player = null
 
         soundPool?.release()
         soundPool = null

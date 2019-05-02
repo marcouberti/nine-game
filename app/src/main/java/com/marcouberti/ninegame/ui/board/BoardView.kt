@@ -57,9 +57,9 @@ class BoardView: LinearLayout, View.OnTouchListener {
         ctx = context
         orientation = VERTICAL
 
-        borderPaint.color = resources.getColor(R.color.white_alpha_40)
+        borderPaint.color = resources.getColor(R.color.java)
         borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = dpToPx(1f)
+        borderPaint.strokeWidth = dpToPx(4f)
         borderPaint.isAntiAlias = true
         //borderPaint.alpha = 40
 
@@ -187,16 +187,15 @@ class BoardView: LinearLayout, View.OnTouchListener {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        val W = measuredWidth.toFloat()
+        val CW = measuredWidth.toFloat() / (board?.width?:1)
 
-            val W = measuredWidth.toFloat()
-            val CW = measuredWidth.toFloat() / (board?.width?:1)
+        for(i in 1 until  (board?.width?:1)) {
+            canvas.drawLine(i*CW, 0F, i*CW , W, borderPaint)
 
-            for(i in 1 until  (board?.width?:1)) {
-                canvas.drawLine(i*CW, 0F, i*CW , W, borderPaint)
-
-            }
-            for(j in 1 until (board?.width?:1)) {
-                canvas.drawLine(0F, j*CW, W , j*CW, borderPaint)
-            }
+        }
+        for(j in 1 until (board?.width?:1)) {
+            canvas.drawLine(0F, j*CW, W , j*CW, borderPaint)
+        }
     }
 }

@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
     <color name="white_alpha_40">#19FFFFFF</color>
-    <color name="black_overlay">#66000000</color>
+    <color name="black_alpha_40">#19000000</color>
+    <color name="light_sea_green">#26BCAC</color>
+    <color name="java">#1EA092</color>
+    <color name="dark_gray">#545454</color>
+    <color name="eggshell">#F2EAD4</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="block_color">@color/dark_gray</color>
+    <color name="block_color_alternative">@color/eggshell</color>
+
 </resources>

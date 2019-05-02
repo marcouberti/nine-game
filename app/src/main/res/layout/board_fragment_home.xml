@@ -23,16 +23,15 @@
 
     <com.marcouberti.ninegame.ui.board.BoardView
             android:id="@+id/boardView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:clickable="true"
             android:clipChildren="false"
-            app:layout_constraintDimensionRatio="1:1" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="32dp" android:layout_marginStart="32dp" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="32dp" android:layout_marginRight="32dp"
-            app:layout_constraintVertical_bias="0.65">
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginLeft="32dp" android:layout_marginStart="32dp" android:layout_marginRight="32dp"
+            android:layout_marginEnd="32dp" android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="parent">
     </com.marcouberti.ninegame.ui.board.BoardView>
     <TextView
             style="@style/GameText"
@@ -53,12 +52,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/scoreLabel"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/recordLabel"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="32dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp" app:layout_constraintVertical_bias="0.41000003"/>
+            app:layout_constraintStart_toStartOf="@+id/boardView"
+            app:layout_constraintBottom_toTopOf="parent" android:layout_marginBottom="32dp"/>
     <TextView
             style="@style/GameText"
             android:text="0"
@@ -81,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/recordLabel"
-            app:layout_constraintTop_toBottomOf="@+id/scoreLabel" app:layout_constraintBottom_toTopOf="@+id/boardView"
+            app:layout_constraintTop_toBottomOf="@+id/scoreLabel"
             app:layout_constraintStart_toStartOf="@+id/scoreLabel"
             android:layout_marginTop="8dp"/>
 
@@ -107,13 +102,43 @@
             app:layout_constraintDimensionRatio="1:1"
             android:padding="4dp"
             app:layout_constraintEnd_toEndOf="@+id/boardView"
-            app:layout_constraintTop_toTopOf="@+id/scoreLabel" android:id="@+id/newCardContainer"
-    >
+            android:id="@+id/newCardContainer"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="parent">
         <com.marcouberti.ninegame.ui.board.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/nextCard"/>
     </FrameLayout>
+    <Button
+            android:text="BACK"
+            style="@style/GameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            tools:layout_editor_absoluteX="161dp" android:id="@+id/backBtn"
+            app:layout_constraintTop_toBottomOf="@+id/boardView"
+            android:layout_marginTop="8dp"/>
+    <Button
+            android:text="PLAY"
+            style="@style/GameButton"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/playBtn"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintVertical_bias="0.8"/>
+    <TextView
+            android:text="9X"
+            android:textSize="@dimen/text_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView" app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/playBtn"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"/>
 
     <!--
     <FrameLayout
@@ -175,35 +200,5 @@
             app:layout_constraintTop_toTopOf="@+id/score2Label"
             app:layout_constraintBottom_toBottomOf="@+id/score2Label"/>
 -->
-    <Button
-            android:text="PLAY"
-            style="@style/GameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/playBtn"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="parent"/>
-    <Button
-            android:text="BACK"
-            style="@style/GameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/backBtn"
-            app:layout_constraintTop_toBottomOf="@+id/boardView"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"/>
 
-    <TextView
-            android:text="9X"
-            android:textSize="@dimen/text_large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toTopOf="parent" android:layout_marginBottom="32dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

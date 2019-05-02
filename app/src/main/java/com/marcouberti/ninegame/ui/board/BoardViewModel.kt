@@ -2,14 +2,17 @@ package com.marcouberti.ninegame.ui.board
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.marcouberti.ninegame.GameApplication
 import com.marcouberti.ninegame.model.*
 import com.marcouberti.ninegame.utils.LiveEvent
 import com.marcouberti.ninegame.utils.OnSwipeListener
+import com.marcouberti.ninegame.utils.RecordManager
 import com.marcouberti.ninegame.utils.VibrationManager
 import kotlin.random.Random
 
 const val BOARD_KEY = "BOARD"
 const val SCORE_KEY = "SCORE"
+const val RECORD_KEY = "RECORD"
 const val NEXT_CARD_KEY = "NEXT_CARD"
 
 class BoardViewModel : ViewModel() {
@@ -35,18 +38,23 @@ class BoardViewModel : ViewModel() {
         MutableLiveData<Int?>()
     }
 
+    val record: MutableLiveData<Int?> by lazy {
+        MutableLiveData<Int?>()
+    }
+
     val movements: MutableLiveData<MutableList<Move>> by lazy {
         MutableLiveData<MutableList<Move>>()
     }
 
     fun newGame() {
         if(board.value == null) {
-            val newBoard = Board(5).apply {
+            val newBoard = Board(6).apply {
                 val newCards = init()
                 movements.value = newCards.toMutableList()
             }
             setBoard(newBoard)
             nextCard.value = Card().apply { init() }
+            record.value = RecordManager.saveRecordIfAny(GameApplication.context!!, 0)
             playSfxNewGame.value = true
         }
     }
@@ -76,6 +84,12 @@ class BoardViewModel : ViewModel() {
     fun setScore(restoredScore: Int) {
         if(score.value == null) {
             score.value = restoredScore
+        }
+    }
+
+    fun setRecord(restoredRecord: Int) {
+        if(record.value == null) {
+            record.value = restoredRecord
         }
     }
 
@@ -110,6 +124,7 @@ class BoardViewModel : ViewModel() {
                         it*10
                     }
                     score.value = (score.value?:0).plus(newPoints)
+                    record.value = RecordManager.saveRecordIfAny(GameApplication.context!!, score.value?:0)
                 }
             }
 
