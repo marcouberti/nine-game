@@ -5,11 +5,11 @@
 
     <!-- normal -->
     <font
-        android:font="@font/minimalpixel"
+        android:font="@font/earlygameboy"
         android:fontStyle="normal"
         android:fontWeight="400"
 
-        app:font="@font/minimalpixel"
+        app:font="@font/earlygameboy"
         app:fontStyle="normal"
         app:fontWeight="400" />
 

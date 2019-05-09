@@ -32,7 +32,7 @@
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="32dp" android:layout_marginStart="32dp" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="32dp" android:layout_marginRight="32dp"
-            app:layout_constraintVertical_bias="0.65">
+            app:layout_constraintVertical_bias="0.6">
     </com.marcouberti.ninegame.ui.board.BoardView>
     <TextView
             style="@style/GameText"
@@ -47,7 +47,7 @@
             android:layout_marginStart="8dp"/>
     <TextView
             style="@style/GameText"
-            android:text="Score:"
+            android:text="score:"
             android:textSize="@dimen/text_medium"
             android:textStyle="bold"
             android:layout_width="wrap_content"
@@ -75,7 +75,7 @@
     <TextView
             style="@style/GameText"
             android:textColor="@color/dark_gray"
-            android:text="Record:"
+            android:text="record:"
             android:textStyle="bold"
             android:textSize="@dimen/text_small"
             android:layout_width="wrap_content"
@@ -185,17 +185,19 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="parent"/>
-    <Button
-            android:text="BACK"
-            style="@style/GameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <ImageButton
+            android:src="@drawable/ic_pause_black_24dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:id="@+id/backBtn"
             app:layout_constraintTop_toBottomOf="@+id/boardView"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="32dp" android:layout_marginTop="32dp"/>
 
     <TextView
             android:text="9X"

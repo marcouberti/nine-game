@@ -46,7 +46,7 @@
             android:layout_marginStart="8dp"/>
     <TextView
             style="@style/GameText"
-            android:text="Score:"
+            android:text="SCORE:"
             android:textSize="@dimen/text_medium"
             android:textStyle="bold"
             android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
     <TextView
             style="@style/GameText"
             android:textColor="@color/dark_gray"
-            android:text="Record:"
+            android:text="RECORD:"
             android:textStyle="bold"
             android:textSize="@dimen/text_small"
             android:layout_width="wrap_content"
@@ -109,11 +109,12 @@
                 android:layout_height="match_parent"
                 android:id="@+id/nextCard"/>
     </FrameLayout>
-    <Button
-            android:text="BACK"
-            style="@style/GameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <ImageButton
+            android:src="@drawable/ic_pause_black_24dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerCrop"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
             tools:layout_editor_absoluteX="161dp" android:id="@+id/backBtn"
@@ -121,8 +122,9 @@
             android:layout_marginTop="8dp"/>
     <Button
             android:text="PLAY"
+            android:gravity="center"
             style="@style/GameButton"
-            android:layout_width="88dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/playBtn"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
@@ -132,7 +134,7 @@
             android:layout_marginStart="8dp" app:layout_constraintVertical_bias="0.8"/>
     <TextView
             android:text="9X"
-            android:textSize="@dimen/text_large"
+            android:textSize="@dimen/text_home_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/textView" app:layout_constraintTop_toTopOf="parent"
