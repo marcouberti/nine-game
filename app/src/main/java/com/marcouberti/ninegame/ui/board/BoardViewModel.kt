@@ -14,6 +14,7 @@ const val BOARD_KEY = "BOARD"
 const val SCORE_KEY = "SCORE"
 const val RECORD_KEY = "RECORD"
 const val NEXT_CARD_KEY = "NEXT_CARD"
+const val PLAYING_KEY = "PLAYING_KEY"
 
 class BoardViewModel : ViewModel() {
 
@@ -40,6 +41,10 @@ class BoardViewModel : ViewModel() {
 
     val record: MutableLiveData<Int?> by lazy {
         MutableLiveData<Int?>()
+    }
+
+    val playing: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
     }
 
     val movements: MutableLiveData<MutableList<Move>> by lazy {
@@ -85,6 +90,10 @@ class BoardViewModel : ViewModel() {
         if(score.value == null) {
             score.value = restoredScore
         }
+    }
+
+    fun setPlaying(isPlaying: Boolean) {
+        playing.value = isPlaying
     }
 
     fun setRecord(restoredRecord: Int) {

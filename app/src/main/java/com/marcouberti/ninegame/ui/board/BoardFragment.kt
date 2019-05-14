@@ -36,6 +36,7 @@ class BoardFragment : Fragment(), CardSwipeListener {
         outState.putParcelable(NEXT_CARD_KEY, viewModel.nextCard.value)
         outState.putInt(SCORE_KEY, viewModel.score.value?:0)
         outState.putInt(RECORD_KEY, viewModel.record.value?:0)
+        outState.putBoolean(PLAYING_KEY, viewModel.playing.value?:false)
     }
 
     override fun onCreateView(
@@ -110,6 +111,13 @@ class BoardFragment : Fragment(), CardSwipeListener {
             soundManager.playSfx3()
         })
 
+        viewModel.playing.observe(this, Observer {
+            when(it) {
+                true -> showGame()
+                else -> showMenu()
+            }
+        })
+
         if(savedInstanceState != null) {
             savedInstanceState.getParcelable<Board>(BOARD_KEY)?.let {
                 viewModel.setBoard(it)
@@ -123,39 +131,40 @@ class BoardFragment : Fragment(), CardSwipeListener {
             savedInstanceState.getInt(RECORD_KEY).let {
                 viewModel.setRecord(it)
             }
+            savedInstanceState.getBoolean(PLAYING_KEY).let {
+                viewModel.setPlaying(it)
+            }
         }
 
         init()
+    }
+
+    private fun showGame() {
+        val constraint = ConstraintSet()
+        constraint.clone(context, R.layout.board_fragment)
+
+        TransitionManager.beginDelayedTransition(root)
+        constraint.applyTo(root)
+    }
+
+    private fun showMenu() {
+        val constraint = ConstraintSet()
+        constraint.clone(context, R.layout.board_fragment_home)
+
+        TransitionManager.beginDelayedTransition(root)
+        constraint.applyTo(root)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //nextCard2.color = Color.WHITE
 
-        playBtn.setOnClickListener { view ->
-            var set = false
-            val constraint1 = ConstraintSet()
-            constraint1.clone(root)
-            val constraint2 = ConstraintSet()
-            constraint2.clone(context, R.layout.board_fragment)
-
-            TransitionManager.beginDelayedTransition(root)
-            val constraint = if(set) constraint1 else constraint2
-            constraint.applyTo(root)
-            set = !set
+        playBtn.setOnClickListener {
+            viewModel.setPlaying(true)
         }
 
-        backBtn.setOnClickListener { view ->
-            var set = false
-            val constraint1 = ConstraintSet()
-            constraint1.clone(root)
-            val constraint2 = ConstraintSet()
-            constraint2.clone(context, R.layout.board_fragment_home)
-
-            TransitionManager.beginDelayedTransition(root)
-            val constraint = if(set) constraint1 else constraint2
-            constraint.applyTo(root)
-            set = !set
+        backBtn.setOnClickListener {
+            viewModel.setPlaying(false)
         }
     }
 

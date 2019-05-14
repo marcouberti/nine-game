@@ -119,6 +119,7 @@ class BoardView: LinearLayout, View.OnTouchListener {
                     row.addView(rootView)
                     val cardView = rootView.findViewById(R.id.card) as CardView
                     cardView.position = Pair(i,j)
+                    cardView.card = b[Pair(i,j)]
                     cardMap[Pair(i,j)] = cardView
                 }
 
