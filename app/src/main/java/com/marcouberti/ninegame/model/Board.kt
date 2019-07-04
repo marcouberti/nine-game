@@ -6,7 +6,8 @@ import com.marcouberti.ninegame.utils.OnSwipeListener
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Board(val width: Int, val cards: MutableMap<Pair<Int, Int>, Card?> = mutableMapOf()): Parcelable
+data class Board(val width: Int, val cards: MutableMap<Pair<Int, Int>, Card?> = mutableMapOf(),
+                 val filled: MutableMap<Pair<Int, Int>, Boolean> = mutableMapOf()): Parcelable
 
 operator fun Board.set(pair: Pair<Int,Int>, card: Card?) {
     cards[pair] = card
@@ -71,6 +72,7 @@ fun Board.merge(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Int? {
         val merged = cell1.merge(cell2)
         if(merged?.isFull() == true) {// pouf!
             this[pos2] = null
+            this.filled[pos2] = true
         }else {
             this[pos2] = merged
         }
@@ -199,6 +201,10 @@ fun Board.gameOver(): Boolean {
         }
     }
     return true
+}
+
+fun Board.filled(pos: Pair<Int, Int>): Boolean {
+    return this.filled[pos] == true
 }
 
 fun Pair<Int, Int>.between(pos1: Pair<Int, Int>, pos2: Pair<Int, Int>): Boolean {

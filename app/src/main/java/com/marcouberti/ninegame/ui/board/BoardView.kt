@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 class BoardView: LinearLayout, View.OnTouchListener {
 
     private val borderPaint = Paint()
+    private val filledPaint = Paint()
 
     var selectedCard: CardView? = null
 
@@ -61,7 +62,12 @@ class BoardView: LinearLayout, View.OnTouchListener {
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = dpToPx(4f)
         borderPaint.isAntiAlias = true
-        //borderPaint.alpha = 40
+
+        filledPaint.color = resources.getColor(R.color.java)
+        filledPaint.style = Paint.Style.FILL
+        filledPaint.strokeWidth = dpToPx(4f)
+        filledPaint.isAntiAlias = true
+        //filledPaint.alpha = 200
 
         gestureDetector = GestureDetectorCompat(ctx, object : OnSwipeListener() {
 
@@ -183,6 +189,7 @@ class BoardView: LinearLayout, View.OnTouchListener {
             }
 
             movements?.clear()
+            invalidate()
         }
     }
 
@@ -191,6 +198,16 @@ class BoardView: LinearLayout, View.OnTouchListener {
         val W = measuredWidth.toFloat()
         val CW = measuredWidth.toFloat() / (board?.width?:1)
 
+        // draw filled cells
+        for(i in 1 .. (board?.width?:1)) {
+            for(j in 1 .. (board?.width?:1)) {
+                if(board?.filled(Pair(i,j)) == true) {
+                    canvas.drawRect((j-1)*CW, (i-1)*CW, j*CW , i*CW, filledPaint)
+                }
+            }
+        }
+
+        // draw grid
         for(i in 1 until  (board?.width?:1)) {
             canvas.drawLine(i*CW, 0F, i*CW , W, borderPaint)
 

@@ -10,7 +10,7 @@
     <color name="eggshell">#F2EAD4</color>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#ffd975</color>
 
     <color name="block_color">@color/dark_gray</color>
     <color name="block_color_alternative">@color/eggshell</color>
