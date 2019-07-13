@@ -58,13 +58,13 @@ class BoardView: LinearLayout, View.OnTouchListener {
         ctx = context
         orientation = VERTICAL
 
-        borderPaint.color = resources.getColor(R.color.java)
+        borderPaint.color = resources.getColor(R.color.block_color)
         borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = dpToPx(4f)
+        borderPaint.strokeWidth = dpToPx(2f)
         borderPaint.isAntiAlias = true
 
-        filledPaint.color = resources.getColor(R.color.java)
-        filledPaint.style = Paint.Style.FILL
+        filledPaint.color = resources.getColor(R.color.colorAccent)
+        filledPaint.style = Paint.Style.STROKE
         filledPaint.strokeWidth = dpToPx(4f)
         filledPaint.isAntiAlias = true
         //filledPaint.alpha = 200
@@ -198,15 +198,6 @@ class BoardView: LinearLayout, View.OnTouchListener {
         val W = measuredWidth.toFloat()
         val CW = measuredWidth.toFloat() / (board?.width?:1)
 
-        // draw filled cells
-        for(i in 1 .. (board?.width?:1)) {
-            for(j in 1 .. (board?.width?:1)) {
-                if(board?.filled(Pair(i,j)) == true) {
-                    canvas.drawRect((j-1)*CW, (i-1)*CW, j*CW , i*CW, filledPaint)
-                }
-            }
-        }
-
         // draw grid
         for(i in 1 until  (board?.width?:1)) {
             canvas.drawLine(i*CW, 0F, i*CW , W, borderPaint)
@@ -214,6 +205,15 @@ class BoardView: LinearLayout, View.OnTouchListener {
         }
         for(j in 1 until (board?.width?:1)) {
             canvas.drawLine(0F, j*CW, W , j*CW, borderPaint)
+        }
+
+        // draw filled cells
+        for(i in 1 .. (board?.width?:1)) {
+            for(j in 1 .. (board?.width?:1)) {
+                if(board?.filled(Pair(i,j)) == true) {
+                    canvas.drawRect((j-1)*CW, (i-1)*CW, j*CW , i*CW, filledPaint)
+                }
+            }
         }
     }
 }

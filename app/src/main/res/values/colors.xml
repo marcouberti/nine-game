@@ -11,7 +11,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#ffd975</color>
-
+    <color name="textPrimary">@color/eggshell</color>
+    <color name="textSecondary">@color/dark_gray</color>
     <color name="block_color">@color/dark_gray</color>
     <color name="block_color_alternative">@color/eggshell</color>
 
