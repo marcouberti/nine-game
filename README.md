@@ -5,4 +5,4 @@
 
 This is a **native Android project** written 100% in **Kotlin**.
 
-> <img src="/imgs/screen_1.png" width="350"> <img src="/imgs/screen_2.png" width="350"> <img src="/imgs/screen_3.png" width="350">
+<img src="/imgs/screen_1.png" width="300"> <img src="/imgs/screen_2.png" width="300"> <img src="/imgs/screen_3.png" width="300">
