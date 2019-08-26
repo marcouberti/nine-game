@@ -12,5 +12,5 @@ Testing
 
 To run unit tests execute this command:
 
-./gradlew clean assembleNeatoDebug testNeatoDebug
+> ./gradlew clean assembleNeatoDebug testNeatoDebug
 
